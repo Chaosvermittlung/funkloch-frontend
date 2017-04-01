@@ -64,27 +64,29 @@
             <li><a href="#">Wishlists</a></li>
           </ul>
         </div>
+        
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          {{.Message}}
           <h1 class="page-header">Dashboard</h1>
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
               <h4>Next Event</h4>
-              <span class="text-muted">There are $Number Events planned.</span></br>
-              <span class="text-muted">The next starts in x Days. x People are registered for it.</span>
+              <span class="text-muted">There are {{.Event.Count}} Events planned.</span></br>
+              <span class="text-muted">The next starts in {{.Event.Days}} Days. {{.Event.Registred}} People are registered for it.</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
               <h4>Items</h4>
-              <span class="text-muted">There are currently $Number Items in this Instance.</span></br>
-              <span class="text-muted">They are organised in $Number Stores.</span>
+              <span class="text-muted">There are currently {{.Item.Count}} Items in this Instance.</span></br>
+              <span class="text-muted">They are organised in {{.Item.Stores}} Stores.</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
               <h4>Members</h4>
-              <span class="text-muted">There are currently $Number Members registered.</span>
+              <span class="text-muted">There are currently {{.Member.Registred}} Members registered.</span>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
               <h4>Faults</h4>
-              <span class="text-muted">There are currently $Number of fixable Faults listed</span>
+              <span class="text-muted">There are currently {{.Fault.Count}} of fixable Faults listed</span>
             </div>
           </div>
 
