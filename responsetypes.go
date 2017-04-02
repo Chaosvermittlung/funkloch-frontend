@@ -70,3 +70,8 @@ type Fault struct {
 	Status      FaultStatus
 	Comment     string
 }
+
+type Equipment struct {
+	EquipmentID int
+	Name        string
+}

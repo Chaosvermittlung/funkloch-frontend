@@ -91,10 +91,12 @@ func sendauthorizedHTTPRequest(method string, endpoint string, token string, in 
 		return errors.New("Got negativ status code: " + er.Errorcode + ":" + er.Errormessage)
 	}
 
-	decoder := json.NewDecoder(resp.Body)
-	err = decoder.Decode(v)
-	if err != nil {
-		return errors.New("Unable to decode on given Interface: " + err.Error())
+	if v != nil {
+		decoder := json.NewDecoder(resp.Body)
+		err = decoder.Decode(v)
+		if err != nil {
+			return errors.New("Unable to decode on given Interface: " + err.Error())
+		}
 	}
 	return nil
 }
