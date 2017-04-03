@@ -47,3 +47,27 @@ type EquipmentEditPage struct {
 	Default DefaultPage
 	Equip   Equipment
 }
+
+type ListEvent struct {
+	Eve           Event
+	Participiants int
+}
+
+type EventListPage struct {
+	Default DefaultPage
+	Events  []ListEvent
+}
+
+type EventViewPage struct {
+	Default       DefaultPage
+	Eve           Event
+	Us            User
+	Participiants []eventParticipiantsResponse
+	IsPart        bool
+	Lists         []Packinglist
+}
+
+type EventEditPage struct {
+	Default DefaultPage
+	Eve     Event
+}

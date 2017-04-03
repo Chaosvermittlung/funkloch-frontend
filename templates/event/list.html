@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="static/favicon.ico">
 
-    <title>Funkloch Edit Equipment</title>
+    <title>Funkloch Event List</title>
 
     <!-- Bootstrap core CSS -->
     <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -57,8 +57,8 @@
           <ul class="nav nav-sidebar">
             <li><a href="/">Overview</a></li>
             <li><a href="#">Items</a></li>
-            <li class="active"><a href="/equipment">Equipment <span class="sr-only">(current)</span></a></li>
-            <li><a href="/event">Events</a></li>
+            <li><a href="/equipment">Equipment</a></li>
+            <li class="active"><a href="/event">Events<span class="sr-only">(current)</span></a></li>
             <li><a href="#">Stores</a></li>
             <li><a href="#">Faults</a></li>
             <li><a href="#">Wishlists</a></li>
@@ -67,30 +67,42 @@
         
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           {{.Default.Message}}
-          <h2 class="sub-header">Edit Equipment</h2>
-          <form class="form-horizontal" method="POST">
-            <fieldset>
-
-            <div class="form-group">
-              <label class="control-label" for="textinput">ID</label>  
-              <input type="text" class="form-control input-md" disabled="" value="{{.Equip.EquipmentID}}">
-            </div>
-
-            <!-- Text input-->
-            <div class="form-group">
-              <label class="control-label" for="textinput">Name</label>  
-              <input id="textinput" name="equipmentname" type="text" value="{{.Equip.Name}}" class="form-control input-md" required="">
-            </div>
-
-            <!-- Button -->
-            <div class="form-group">
-                <button id="singlebutton" type="submit" name="action" value="patch" class="btn btn-primary">Save</button>
-                <button id="deletebutton" type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
-                <input type="hidden" name="equipmentid" value="{{.Equip.EquipmentID}}"/>
-            </div>
-
-            </fieldset>
+          <h2 class="sub-header">Event List</h2>
+          <form method="GET">
+            <button type="submit" name="action" value="add" class="btn btn-primary">Add Event</button>
           </form>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Participiants</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {{range $index, $element := .Events}}
+                <tr>
+                  <td>{{$element.Eve.Name}}</td>
+                  <td>{{$element.Eve.Start}}</td>
+                  <td>{{$element.Eve.End}}</td>
+                  <td>{{$element.Participiants}}</td>
+                  <td>
+                      <form method="GET">
+                        <button type="submit" name="action" value="view" class="btn btn-default btn-xs" aria-label="Right Align">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                        <input type="hidden" name="id" value="{{$element.Eve.EventID}}"/>
+                        
+                      </form>
+                  </td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

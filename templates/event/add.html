@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="static/favicon.ico">
 
-    <title>Funkloch Edit Equipment</title>
+    <title>Funkloch Equipment List</title>
 
     <!-- Bootstrap core CSS -->
     <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -57,8 +57,8 @@
           <ul class="nav nav-sidebar">
             <li><a href="/">Overview</a></li>
             <li><a href="#">Items</a></li>
-            <li class="active"><a href="/equipment">Equipment <span class="sr-only">(current)</span></a></li>
-            <li><a href="/event">Events</a></li>
+            <li><a href="/equipment">Equipment</span></a></li>
+            <li class="active"><a href="/event">Events <span class="sr-only">(current)</a></li>
             <li><a href="#">Stores</a></li>
             <li><a href="#">Faults</a></li>
             <li><a href="#">Wishlists</a></li>
@@ -66,27 +66,33 @@
         </div>
         
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          {{.Default.Message}}
-          <h2 class="sub-header">Edit Equipment</h2>
-          <form class="form-horizontal" method="POST">
+          <h2 class="sub-header">Add Event</h2>
+          <form method="post">
             <fieldset>
-
-            <div class="form-group">
-              <label class="control-label" for="textinput">ID</label>  
-              <input type="text" class="form-control input-md" disabled="" value="{{.Equip.EquipmentID}}">
-            </div>
 
             <!-- Text input-->
             <div class="form-group">
               <label class="control-label" for="textinput">Name</label>  
-              <input id="textinput" name="equipmentname" type="text" value="{{.Equip.Name}}" class="form-control input-md" required="">
+              <input id="textinput" name="eventname" type="text" value="" class="form-control input-md" required="">
             </div>
 
+            <div class="form-group">
+              <label class="control-label" for="startdate">Start</label>
+              <input class="form-control" id="startdate" name="startdate" placeholder="YYYY-MM-DD" type="text" value=""/>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label" for="enddate">End</label>
+              <input class="form-control" id="enddate" name="enddate" placeholder="YYYY-MM-DD" type="text" value=""/>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label " for="textarea">Adress</label>
+              <textarea class="form-control" cols="40" id="adress" name="adress" rows="10"></textarea>
+            </div>
             <!-- Button -->
             <div class="form-group">
-                <button id="singlebutton" type="submit" name="action" value="patch" class="btn btn-primary">Save</button>
-                <button id="deletebutton" type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
-                <input type="hidden" name="equipmentid" value="{{.Equip.EquipmentID}}"/>
+                <button id="savebutton" type="submit" name="action" value="save" class="btn btn-primary">Save</button>
             </div>
 
             </fieldset>

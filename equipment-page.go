@@ -97,7 +97,7 @@ func patchEquipment(w http.ResponseWriter, r *http.Request, token string) {
 
 func equipmentHandler(w http.ResponseWriter, r *http.Request) {
 
-	token, err := GetCookie(r)
+	token, err := GetCookie(r, "token")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return

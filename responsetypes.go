@@ -75,3 +75,16 @@ type Equipment struct {
 	EquipmentID int
 	Name        string
 }
+
+type Packinglist struct {
+	PackinglistID int
+	Name          string
+	EventID       int
+}
+
+type Participant struct {
+	UserID    int
+	EventID   int
+	Arrival   time.Time
+	Departure time.Time
+}

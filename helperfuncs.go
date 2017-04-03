@@ -101,13 +101,12 @@ func sendauthorizedHTTPRequest(method string, endpoint string, token string, in 
 	return nil
 }
 
-func SetCookie(w http.ResponseWriter, u string) error {
+func SetCookie(w http.ResponseWriter, key string, value string) error {
 
-	value := map[string]string{
-		"token": u,
-	}
+	cmap := make(map[string]string)
+	cmap[key] = value
 
-	encoded, err := sc.Encode(cookieplace, value)
+	encoded, err := sc.Encode(cookieplace, cmap)
 
 	if err != nil {
 		return err
@@ -124,19 +123,19 @@ func SetCookie(w http.ResponseWriter, u string) error {
 	return nil
 }
 
-func GetCookie(r *http.Request) (string, error) {
+func GetCookie(r *http.Request, key string) (string, error) {
 	cookie, err := r.Cookie(cookieplace)
 
 	if err != nil {
 		return "", err
 	}
-	value := make(map[string]string)
-	err = sc.Decode(cookieplace, cookie.Value, &value)
+	cmap := make(map[string]string)
+	err = sc.Decode(cookieplace, cookie.Value, &cmap)
 
 	if err != nil {
 		return "", err
 	}
-	return value["token"], nil
+	return cmap[key], nil
 
 }
 

@@ -17,6 +17,7 @@ import (
 var conf config
 
 func showtemplate(w http.ResponseWriter, path string, data interface{}) {
+
 	t, err := template.ParseFiles(path)
 	if err != nil {
 		fmt.Fprintln(w, "Error parsing template:", err)
@@ -65,7 +66,7 @@ func loginprocess(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return errors.New("Error while decoding Auth response: " + err.Error())
 	}
-	err = SetCookie(w, ar.Token)
+	err = SetCookie(w, "token", ar.Token)
 	if err != nil {
 		return errors.New("WAWAWAWAWA Cookies not allowed")
 	}
@@ -102,7 +103,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var mp Mainpage
 	tp := "templates/main.html"
 
-	token, err := GetCookie(r)
+	token, err := GetCookie(r, "token")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
@@ -130,9 +131,9 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	mp.Event.Days = int(Round(dur.Hours()/24, 0.5, 0))
 
 	var eprs []eventParticipiantsResponse
-	err = sendauthorizedHTTPRequest("GET", "event/"+strconv.Itoa(nextEvent.EventID)+"/Participiants", token, nil, &eprs)
+	err = sendauthorizedHTTPRequest("GET", "event/"+strconv.Itoa(nextEvent.EventID)+"/Participants", token, nil, &eprs)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating event/Participiants request: "+err.Error())
+		mp.Message = BuildMessage(errormessage, "Error creating event/Participants request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -192,6 +193,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", mainhandler)
 	r.HandleFunc("/equipment", equipmentHandler)
+	r.HandleFunc("/event", eventHandler)
 	r.HandleFunc("/login", loginhandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(conf.Port), r))
