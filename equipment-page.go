@@ -10,6 +10,7 @@ func showEquipmentlist(w http.ResponseWriter, token string) {
 	var elp EquipmentListPage
 	tp := "templates/equipment/list.html"
 	elp.Default.Sidebar = BuildSidebar(EquipmentActive)
+	elp.Default.Pagename = "Equipment List"
 
 	err := sendauthorizedHTTPRequest("GET", "equipment/list", token, nil, &elp.Equipments)
 	if err != nil {
@@ -24,6 +25,7 @@ func showEquipmentlist(w http.ResponseWriter, token string) {
 func showEquipmentAddForm(w http.ResponseWriter, token string) {
 	var eap EquipmentAddPage
 	eap.Default.Sidebar = BuildSidebar(EquipmentActive)
+	eap.Default.Pagename = "Add Equipment"
 	tp := "templates/equipment/add.html"
 	showtemplate(w, tp, eap)
 }
@@ -32,6 +34,7 @@ func saveNewEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var elp EquipmentListPage
 	tp := "templates/equipment/list.html"
 	elp.Default.Sidebar = BuildSidebar(EquipmentActive)
+	elp.Default.Pagename = "Equipment List"
 	n := r.FormValue("equipmentname")
 	var e Equipment
 	e.Name = n
@@ -52,6 +55,7 @@ func showEquipmentEditForm(w http.ResponseWriter, r *http.Request, token string)
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
 	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
+	eep.Default.Pagename = "Edit Equipment"
 	id := r.FormValue("id")
 	err := sendauthorizedHTTPRequest("GET", "equipment/"+id, token, nil, &eep.Equip)
 	if err != nil {
@@ -67,6 +71,7 @@ func deleteEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
 	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
+	eep.Default.Pagename = "Edit Equipment"
 	id := r.FormValue("id")
 
 	err := sendauthorizedHTTPRequest("DELETE", "equipment/"+id, token, nil, nil)
@@ -84,6 +89,7 @@ func patchEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
 	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
+	eep.Default.Pagename = "Edit Equipment"
 	id := r.FormValue("id")
 	n := r.FormValue("equipmentname")
 	var e Equipment

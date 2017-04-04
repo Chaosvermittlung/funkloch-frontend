@@ -28,6 +28,7 @@ type FrontFault struct {
 type DefaultPage struct {
 	Message  template.HTML
 	Sidebar  template.HTML
+	Pagename string
 	Username string
 }
 

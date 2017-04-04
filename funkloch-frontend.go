@@ -102,6 +102,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var mp Mainpage
 	tp := "templates/main.html"
 	mp.Default.Sidebar = BuildSidebar(OverviewActive)
+	mp.Default.Pagename = "Overview"
 
 	token, err := GetCookie(r, "token")
 	if err != nil {
