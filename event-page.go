@@ -11,6 +11,7 @@ import (
 func showEventlist(w http.ResponseWriter, token string) {
 	var elp EventListPage
 	tp := "templates/event/list.html"
+	elp.Default.Sidebar = BuildSidebar(EventsActive)
 	var ee []Event
 	err := sendauthorizedHTTPRequest("GET", "event/list", token, nil, &ee)
 	if err != nil {
@@ -39,7 +40,7 @@ func showEventlist(w http.ResponseWriter, token string) {
 func viewEvent(w http.ResponseWriter, r *http.Request, token string) {
 	var evp EventViewPage
 	tp := "templates/event/view.html"
-
+	evp.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("id")
 	err := sendauthorizedHTTPRequest("GET", "event/"+id, token, nil, &evp.Eve)
 	if err != nil {
@@ -77,6 +78,7 @@ func viewEvent(w http.ResponseWriter, r *http.Request, token string) {
 func showEventEditForm(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EventEditPage
 	tp := "templates/event/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("eventid")
 	err := sendauthorizedHTTPRequest("GET", "event/"+id, token, nil, &eep.Eve)
 	if err != nil {
@@ -91,6 +93,7 @@ func showEventEditForm(w http.ResponseWriter, r *http.Request, token string) {
 func patchEvent(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EventEditPage
 	tp := "templates/equipment/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("eventid")
 	n := r.FormValue("eventname")
 	sd := r.FormValue("startdate")
@@ -129,6 +132,7 @@ func patchEvent(w http.ResponseWriter, r *http.Request, token string) {
 func deleteEvent(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EventEditPage
 	tp := "templates/event/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("eventid")
 
 	err := sendauthorizedHTTPRequest("DELETE", "event/"+id, token, nil, nil)
@@ -142,13 +146,16 @@ func deleteEvent(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func showEventAddForm(w http.ResponseWriter, token string) {
+	var eap EventAddPage
 	tp := "templates/event/add.html"
+	eap.Default.Sidebar = BuildSidebar(EventsActive)
 	showtemplate(w, tp, nil)
 }
 
 func saveNewEvent(w http.ResponseWriter, r *http.Request, token string) {
 	var elp EventListPage
 	tp := "templates/event/list.html"
+	elp.Default.Sidebar = BuildSidebar(EventsActive)
 	n := r.FormValue("eventname")
 	sd := r.FormValue("startdate")
 	ed := r.FormValue("enddate")
@@ -185,6 +192,7 @@ func saveNewEvent(w http.ResponseWriter, r *http.Request, token string) {
 func addEventParticipant(w http.ResponseWriter, r *http.Request, token string) {
 	var evp EventViewPage
 	tp := "templates/event/view.html"
+	evp.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("eventid")
 	uid := r.FormValue("userid")
 	sd := r.FormValue("startdate")
@@ -224,6 +232,7 @@ func addEventParticipant(w http.ResponseWriter, r *http.Request, token string) {
 func removeEventParticipant(w http.ResponseWriter, r *http.Request, token string) {
 	var evp EventViewPage
 	tp := "templates/event/view.html"
+	evp.Default.Sidebar = BuildSidebar(EventsActive)
 	id := r.FormValue("eventid")
 	uid := r.FormValue("userid")
 	var p Participant

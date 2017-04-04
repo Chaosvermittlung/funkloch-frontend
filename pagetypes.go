@@ -76,3 +76,7 @@ type EventEditPage struct {
 	Default DefaultPage
 	Eve     Event
 }
+
+type EventAddPage struct {
+	Default DefaultPage
+}
