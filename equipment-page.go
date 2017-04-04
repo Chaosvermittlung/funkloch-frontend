@@ -9,10 +9,11 @@ import (
 func showEquipmentlist(w http.ResponseWriter, token string) {
 	var elp EquipmentListPage
 	tp := "templates/equipment/list.html"
+	elp.Default.Sidebar = BuildSidebar(EquipmentActive)
 
 	err := sendauthorizedHTTPRequest("GET", "equipment/list", token, nil, &elp.Equipments)
 	if err != nil {
-		elp.Message = BuildMessage(errormessage, "Error creating equipment/list request: "+err.Error())
+		elp.Default.Message = BuildMessage(errormessage, "Error creating equipment/list request: "+err.Error())
 		showtemplate(w, tp, elp)
 		return
 	}
@@ -21,13 +22,16 @@ func showEquipmentlist(w http.ResponseWriter, token string) {
 }
 
 func showEquipmentAddForm(w http.ResponseWriter, token string) {
+	var eap EquipmentAddPage
+	eap.Default.Sidebar = BuildSidebar(EquipmentActive)
 	tp := "templates/equipment/add.html"
-	showtemplate(w, tp, nil)
+	showtemplate(w, tp, eap)
 }
 
 func saveNewEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var elp EquipmentListPage
 	tp := "templates/equipment/list.html"
+	elp.Default.Sidebar = BuildSidebar(EquipmentActive)
 	n := r.FormValue("equipmentname")
 	var e Equipment
 	e.Name = n
@@ -37,7 +41,7 @@ func saveNewEquipment(w http.ResponseWriter, r *http.Request, token string) {
 
 	err := sendauthorizedHTTPRequest("POST", "equipment/", token, b, &e)
 	if err != nil {
-		elp.Message = BuildMessage(errormessage, "Error posting equipment request: "+err.Error())
+		elp.Default.Message = BuildMessage(errormessage, "Error posting equipment request: "+err.Error())
 		showtemplate(w, tp, elp)
 		return
 	}
@@ -47,6 +51,7 @@ func saveNewEquipment(w http.ResponseWriter, r *http.Request, token string) {
 func showEquipmentEditForm(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
 	id := r.FormValue("id")
 	err := sendauthorizedHTTPRequest("GET", "equipment/"+id, token, nil, &eep.Equip)
 	if err != nil {
@@ -61,6 +66,7 @@ func showEquipmentEditForm(w http.ResponseWriter, r *http.Request, token string)
 func deleteEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
 	id := r.FormValue("id")
 
 	err := sendauthorizedHTTPRequest("DELETE", "equipment/"+id, token, nil, nil)
@@ -77,6 +83,7 @@ func deleteEquipment(w http.ResponseWriter, r *http.Request, token string) {
 func patchEquipment(w http.ResponseWriter, r *http.Request, token string) {
 	var eep EquipmentEditPage
 	tp := "templates/equipment/edit.html"
+	eep.Default.Sidebar = BuildSidebar(EquipmentActive)
 	id := r.FormValue("id")
 	n := r.FormValue("equipmentname")
 	var e Equipment

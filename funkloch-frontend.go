@@ -17,7 +17,6 @@ import (
 var conf config
 
 func showtemplate(w http.ResponseWriter, path string, data interface{}) {
-
 	t, err := template.ParseFiles(path)
 	if err != nil {
 		fmt.Fprintln(w, "Error parsing template:", err)
@@ -102,6 +101,7 @@ func loginhandler(w http.ResponseWriter, r *http.Request) {
 func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var mp Mainpage
 	tp := "templates/main.html"
+	mp.Default.Sidebar = BuildSidebar(OverviewActive)
 
 	token, err := GetCookie(r, "token")
 	if err != nil {
@@ -112,7 +112,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 
 	err = sendauthorizedHTTPRequest("GET", "event/list", token, nil, &ee)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating event/list request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating event/list request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -122,7 +122,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var nextEvent Event
 	err = sendauthorizedHTTPRequest("GET", "event/next", token, nil, &nextEvent)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating event/next request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating event/next request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -133,7 +133,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var eprs []eventParticipiantsResponse
 	err = sendauthorizedHTTPRequest("GET", "event/"+strconv.Itoa(nextEvent.EventID)+"/Participants", token, nil, &eprs)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating event/Participants request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating event/Participants request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -142,7 +142,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var ss []StoreItem
 	err = sendauthorizedHTTPRequest("GET", "storeitem/list", token, nil, &ss)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating storeitem request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating storeitem request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -151,7 +151,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var sts []Store
 	err = sendauthorizedHTTPRequest("GET", "store/list", token, nil, &sts)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -160,7 +160,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var uu []User
 	err = sendauthorizedHTTPRequest("GET", "user/list", token, nil, &uu)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}
@@ -169,7 +169,7 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	var ff []Fault
 	err = sendauthorizedHTTPRequest("GET", "fault/list", token, nil, &ff)
 	if err != nil {
-		mp.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
+		mp.Default.Message = BuildMessage(errormessage, "Error creating store request: "+err.Error())
 		showtemplate(w, tp, mp)
 		return
 	}

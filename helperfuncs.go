@@ -26,7 +26,53 @@ const errormessage = `<div class="alert alert-danger" role="alert">
 
 const cookieplace = "funklock"
 
+var navitems [][]template.HTML
 var sc = securecookie.New(securecookie.GenerateRandomKey(64), securecookie.GenerateRandomKey(32))
+
+func init() {
+	item1 := []template.HTML{`<li class="active"><a href="/">Overview <span class="sr-only">(current)</span></a></li>`, `<li><a href="/">Overview</a></li>`}
+	item2 := []template.HTML{`<li class="active"><a href="/item">Items <span class="sr-only">(current)</span></a></li>`, `<li><a href="/item">Items</a></li>`}
+	item3 := []template.HTML{`<li class="active"><a href="/equipment">Equipment <span class="sr-only">(current)</span></a></li>`, `<li><a href="/equipment">Equipment</a></li>`}
+	item4 := []template.HTML{`<li class="active"><a href="/event">Event <span class="sr-only">(current)</span></a></li>`, `<li><a href="/event">Events</a></li>`}
+	item5 := []template.HTML{`<li class="active"><a href="/store">Stores <span class="sr-only">(current)</span></a></li>`, `<li><a href="/store">Stores</a></li>`}
+	item6 := []template.HTML{`<li class="active"><a href="/fault">Faults <span class="sr-only">(current)</span></a></li>`, `<li><a href="/fault">Faults</a></li>`}
+	item7 := []template.HTML{`<li class="active"><a href="/wishlist">Wishlists <span class="sr-only">(current)</span></a></li>`, `<li><a href="/wishlist">Wishlists</a></li>`}
+	navitems = append(navitems, item1)
+	navitems = append(navitems, item2)
+	navitems = append(navitems, item3)
+	navitems = append(navitems, item4)
+	navitems = append(navitems, item5)
+	navitems = append(navitems, item6)
+	navitems = append(navitems, item7)
+}
+
+const (
+	OverviewActive int = 1 + iota
+	ItemsActive
+	EquipmentActive
+	EventsActive
+	StoresActive
+	FaultsActive
+	WishlistsActive
+)
+
+func BuildSidebar(item int) template.HTML {
+	var res template.HTML
+	res = res + `<div class="col-sm-3 col-md-2 sidebar">`
+	res = res + `<ul class="nav nav-sidebar">`
+	for i, n := range navitems {
+		var add template.HTML
+		if i+1 == item {
+			add = n[0]
+		} else {
+			add = n[1]
+		}
+		res = res + add + "\n"
+	}
+	res = res + `</ul>`
+	res = res + `</div>`
+	return res
+}
 
 func BuildMessage(tp string, message string) template.HTML {
 	message = html.EscapeString(message)

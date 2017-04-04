@@ -27,11 +27,12 @@ type FrontFault struct {
 
 type DefaultPage struct {
 	Message  template.HTML
+	Sidebar  template.HTML
 	Username string
 }
 
 type Mainpage struct {
-	Message template.HTML
+	Default DefaultPage
 	Event   FrontEvent
 	Item    FrontItem
 	Member  FrontMember
@@ -39,8 +40,12 @@ type Mainpage struct {
 }
 
 type EquipmentListPage struct {
-	Message    template.HTML
+	Default    DefaultPage
 	Equipments []Equipment
+}
+
+type EquipmentAddPage struct {
+	Default DefaultPage
 }
 
 type EquipmentEditPage struct {
