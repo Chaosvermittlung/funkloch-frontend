@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -227,7 +226,6 @@ func removeEventParticipant(w http.ResponseWriter, r *http.Request, token string
 	tp := "templates/event/view.html"
 	id := r.FormValue("eventid")
 	uid := r.FormValue("userid")
-	fmt.Println(id, uid)
 	var p Participant
 	var err error
 	p.UserID, err = strconv.Atoi(uid)
@@ -236,7 +234,6 @@ func removeEventParticipant(w http.ResponseWriter, r *http.Request, token string
 		showtemplate(w, tp, evp)
 		return
 	}
-	fmt.Println(p)
 	b := new(bytes.Buffer)
 	encoder := json.NewEncoder(b)
 	encoder.Encode(p)
@@ -258,7 +255,6 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a := r.FormValue("action")
-	fmt.Println(a)
 	switch a {
 	case "add":
 		showEventAddForm(w, token)
@@ -275,7 +271,6 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 	case "add-participant":
 		addEventParticipant(w, r, token)
 	case "remove-participant":
-		fmt.Println("blabla")
 		removeEventParticipant(w, r, token)
 	case "add-packinglist":
 
