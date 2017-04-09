@@ -195,6 +195,7 @@ func main() {
 	r.HandleFunc("/", mainhandler)
 	r.HandleFunc("/equipment", equipmentHandler)
 	r.HandleFunc("/event", eventHandler)
+	r.HandleFunc("/store", storeHandler)
 	r.HandleFunc("/login", loginhandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(conf.Port), r))

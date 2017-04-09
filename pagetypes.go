@@ -81,3 +81,25 @@ type EventEditPage struct {
 type EventAddPage struct {
 	Default DefaultPage
 }
+
+type StoreListPage struct {
+	Default DefaultPage
+	Stores  []Store
+}
+
+type StoreViewPage struct {
+	Default DefaultPage
+	Sto     Store
+	Manager User
+}
+
+type StoreEditPage struct {
+	Default DefaultPage
+	Sto     Store
+	Users   []User
+}
+
+type StoreAddPage struct {
+	Default DefaultPage
+	Users   []User
+}
