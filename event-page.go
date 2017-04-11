@@ -159,10 +159,10 @@ func showEventAddForm(w http.ResponseWriter, token string) {
 }
 
 func saveNewEvent(w http.ResponseWriter, r *http.Request, token string) {
-	var elp EventListPage
-	tp := "templates/event/list.html"
-	elp.Default.Sidebar = BuildSidebar(EventsActive)
-	elp.Default.Pagename = "Event List"
+	var eap EventAddPage
+	tp := "templates/event/add.html"
+	eap.Default.Sidebar = BuildSidebar(EventsActive)
+	eap.Default.Pagename = "Event List"
 	n := r.FormValue("eventname")
 	sd := r.FormValue("startdate")
 	ed := r.FormValue("enddate")
@@ -173,14 +173,14 @@ func saveNewEvent(w http.ResponseWriter, r *http.Request, token string) {
 	e.Adress = ad
 	e.Start, err = time.Parse("2006-01-02", sd)
 	if err != nil {
-		elp.Default.Message = BuildMessage(errormessage, "Error sending parsing Startdate: "+err.Error())
-		showtemplate(w, tp, elp)
+		eap.Default.Message = BuildMessage(errormessage, "Error sending parsing Startdate: "+err.Error())
+		showtemplate(w, tp, eap)
 		return
 	}
 	e.End, err = time.Parse("2006-01-02", ed)
 	if err != nil {
-		elp.Default.Message = BuildMessage(errormessage, "Error sending parsing Enddate: "+err.Error())
-		showtemplate(w, tp, elp)
+		eap.Default.Message = BuildMessage(errormessage, "Error sending parsing Enddate: "+err.Error())
+		showtemplate(w, tp, eap)
 		return
 	}
 	b := new(bytes.Buffer)
@@ -188,8 +188,8 @@ func saveNewEvent(w http.ResponseWriter, r *http.Request, token string) {
 	encoder.Encode(e)
 	err = sendauthorizedHTTPRequest("POST", "event/", token, b, nil)
 	if err != nil {
-		elp.Default.Message = BuildMessage(errormessage, "Error sending Event request: "+err.Error())
-		showtemplate(w, tp, elp)
+		eap.Default.Message = BuildMessage(errormessage, "Error sending Event request: "+err.Error())
+		showtemplate(w, tp, eap)
 		return
 	}
 
