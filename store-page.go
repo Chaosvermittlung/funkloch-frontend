@@ -37,7 +37,7 @@ func showStoreAddForm(w http.ResponseWriter, token string) {
 }
 
 func saveNewStore(w http.ResponseWriter, r *http.Request, token string) {
-	var sap EventEditPage
+	var sap StoreAddPage
 	tp := "templates/store/add.html"
 	sap.Default.Sidebar = BuildSidebar(StoresActive)
 	sap.Default.Pagename = "Add Store"
@@ -106,7 +106,7 @@ func deleteStore(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func patchStore(w http.ResponseWriter, r *http.Request, token string) {
-	var sep EventEditPage
+	var sep StoreEditPage
 	tp := "templates/store/edit.html"
 	sep.Default.Sidebar = BuildSidebar(StoresActive)
 	sep.Default.Pagename = "Edit Store"
