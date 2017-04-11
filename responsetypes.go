@@ -88,3 +88,9 @@ type Participant struct {
 	Arrival   time.Time
 	Departure time.Time
 }
+
+type storeItemResponse struct {
+	StoreItem StoreItem
+	Store     Store
+	Equipment Equipment
+}

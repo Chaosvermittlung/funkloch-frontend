@@ -1,21 +1,27 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"html"
 	"html/template"
+	"image/jpeg"
 	"io"
 	"io/ioutil"
 	"math"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/ean"
 	"github.com/gorilla/securecookie"
+	"github.com/jung-kurt/gofpdf"
 )
 
 const errormessage = `<div class="alert alert-danger" role="alert">
@@ -24,7 +30,7 @@ const errormessage = `<div class="alert alert-danger" role="alert">
   $MESSAGE$
 </div>`
 
-const cookieplace = "funklock"
+const cookieplace = "funkloch"
 
 var navitems [][]template.HTML
 var sc = securecookie.New(securecookie.GenerateRandomKey(64), securecookie.GenerateRandomKey(32))
@@ -211,4 +217,94 @@ func Round(val float64, roundOn float64, places int) (newVal float64) {
 	}
 	newVal = round / pow
 	return
+}
+
+func createEAN13(id int) string {
+	res := "2"
+	ids := strconv.Itoa(id)
+	for i := 1; i < (12 - len(ids)); i++ {
+		res = res + "0"
+	}
+	res = res + ids
+	c := calculateCheckDigit(res)
+	return res + c
+}
+
+func calculateCheckDigit(num string) string {
+	sum := 0
+	multiplier := 1
+	for _, d := range num {
+		di, err := strconv.Atoi(string(d))
+		if err != nil {
+			return ""
+		}
+		sum += di * multiplier
+		if multiplier == 3 {
+			multiplier = 1
+		} else {
+			multiplier = 3
+		}
+	}
+	return mod(-sum, 10)
+}
+
+func mod(x int, y int) string {
+	result := x % y
+	if result < 0 {
+		result += y
+	}
+	return strconv.Itoa(result)
+}
+
+func createlabel(id string, store string, out io.Writer) error {
+	pdf := gofpdf.NewCustom(&gofpdf.InitType{
+		UnitStr:        "mm",
+		Size:           gofpdf.SizeType{Wd: 62, Ht: 42},
+		OrientationStr: "P",
+	})
+	pdf.SetMargins(1, 1, 1)
+	pdf.SetFont("Helvetica", "", 14)
+	pdf.AddPage()
+	pdf.SetXY(1, 0)
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
+	store = tr(store)
+	bcode, err := ean.Encode(id)
+
+	if err != nil {
+		return err
+	}
+
+	bc, err := barcode.Scale(bcode, 620, 200)
+
+	if err != nil {
+		return err
+	}
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, bc, nil)
+	by := buf.Bytes()
+	r := bytes.NewReader(by)
+	pdf.RegisterImageReader("code", "JPEG", r)
+	pdf.Image("code", 1, 0, 62, 20, false, "", 0, "")
+	w := pdf.GetStringWidth(id)
+	pos := (62 - w) / 2
+	pdf.Text(pos, 20+4, id)
+
+	fs := 1.0
+	w = pdf.GetStringWidth(store)
+	for (w < 60) && (fs < 45) {
+		fs = fs + 1
+		pdf.SetFontSize(fs)
+		w = pdf.GetStringWidth(store)
+	}
+	fs = fs - 1
+	if fs < 1 {
+		fs = 1
+	}
+	pdf.SetFontSize(fs)
+	pos = (64 - w) / 2
+	h := fs / 72 * 25.4
+	y := (16 - h) / 2
+	pdf.Text(pos, 40-y, store)
+	err = pdf.Output(out)
+	return err
 }

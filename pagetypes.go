@@ -103,3 +103,37 @@ type StoreAddPage struct {
 	Default DefaultPage
 	Users   []User
 }
+
+type ItemListPage struct {
+	Default DefaultPage
+	Items   []storeItemResponse
+}
+
+type ItemViewPage struct {
+	Default DefaultPage
+	Ite     storeItemResponse
+	EAN     string
+}
+
+type ItemEditPage struct {
+	Default    DefaultPage
+	Ite        storeItemResponse
+	Stores     []Store
+	Equipments []Equipment
+}
+
+type ItemAddPage struct {
+	Default    DefaultPage
+	Stores     []Store
+	Equipments []Equipment
+}
+
+type ItemNewItem struct {
+	ID    string
+	Store string
+}
+
+type ItemNewPAge struct {
+	Default DefaultPage
+	IDs     []ItemNewItem
+}
