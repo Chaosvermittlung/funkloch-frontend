@@ -95,8 +95,7 @@ func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 			showtemplate(w, tp2, inp)
 			return
 		}
-		id := createEAN13(res.StoreItemID)
-		ini.ID = id
+		ini.ID = strconv.Itoa(res.Code)
 		ini.Store = so.Name
 		inp.IDs = append(inp.IDs, ini)
 	}
@@ -182,7 +181,6 @@ func viewItem(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, ivp)
 		return
 	}
-	ivp.EAN = createEAN13(ivp.Ite.StoreItem.StoreItemID)
 	showtemplate(w, tp, ivp)
 }
 

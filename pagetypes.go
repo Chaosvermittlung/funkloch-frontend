@@ -112,7 +112,6 @@ type ItemListPage struct {
 type ItemViewPage struct {
 	Default DefaultPage
 	Ite     storeItemResponse
-	EAN     string
 }
 
 type ItemEditPage struct {

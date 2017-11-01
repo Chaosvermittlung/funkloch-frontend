@@ -53,6 +53,7 @@ type StoreItem struct {
 	StoreItemID int
 	StoreID     int
 	EquipmentID int
+	Code        int
 }
 
 type FaultStatus int
