@@ -22,4 +22,5 @@ _testmain.go
 *.exe
 *.test
 *.prof
-funkloch-fronted
+funkloch-frontend
+config.json
