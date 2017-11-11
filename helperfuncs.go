@@ -230,29 +230,8 @@ func createlabel(id string, store string, out io.Writer) error {
 	pdf.SetXY(1, 0)
 	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	store = tr(store)
-	bcode, err := ean.Encode(id)
-
-	if err != nil {
-		return err
-	}
-
-	bc, err := barcode.Scale(bcode, 620, 200)
-
-	if err != nil {
-		return err
-	}
-	buf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, bc, nil)
-	by := buf.Bytes()
-	r := bytes.NewReader(by)
-	pdf.RegisterImageReader("code", "JPEG", r)
-	pdf.Image("code", 1, 0, 62, 20, false, "", 0, "")
-	w := pdf.GetStringWidth(id)
-	pos := (62 - w) / 2
-	pdf.Text(pos, 20+4, id)
-
 	fs := 1.0
-	w = pdf.GetStringWidth(store)
+	w := pdf.GetStringWidth(store)
 	for (w < 60) && (fs < 45) {
 		fs = fs + 1
 		pdf.SetFontSize(fs)
@@ -263,10 +242,36 @@ func createlabel(id string, store string, out io.Writer) error {
 		fs = 1
 	}
 	pdf.SetFontSize(fs)
-	pos = (64 - w) / 2
+	pos := (64 - w) / 2
 	h := fs / 72 * 25.4
-	y := (16 - h) / 2
-	pdf.Text(pos, 40-y, store)
+	y := (16 - h) + 3
+	pdf.Text(pos, y, store)
+
+	bcode, err := ean.Encode(id)
+
+	if err != nil {
+		return err
+	}
+
+	bc, err := barcode.Scale(bcode, 420, 200)
+
+	if err != nil {
+		return err
+	}
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, bc, nil)
+	by := buf.Bytes()
+	r := bytes.NewReader(by)
+	pdf.RegisterImageReader("code", "JPEG", r)
+	imageh := 42.0
+	pdf.Image("code", 11, y+3, imageh, 20, false, "", 0, "")
+
+	pdf.SetFontSize(14)
+	w = pdf.GetStringWidth(id)
+	pos = (64 - w) / 2
+	//fh := 14 / 72 * 25.4
+	pdf.Text(pos, y+imageh-15, id)
+
 	err = pdf.Output(out)
 	return err
 }
