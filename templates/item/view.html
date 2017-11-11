@@ -87,7 +87,7 @@
                   <button id="singlebutton" type="submit" name="action" value="label" class="btn btn-primary">Create Label</button>
                   <input type="hidden" name="itemid" value="{{.Ite.StoreItem.StoreItemID}}"/>
                   <input type="hidden" name="store" value="{{.Ite.Store.Name}}"/>
-                  <input type="hidden" name="EAN" value="{{.EAN}}"/>
+                  <input type="hidden" name="EAN" value="{{.Ite.StoreItem.Code}}"/>
               </div>
               </fieldset>
             </form>
