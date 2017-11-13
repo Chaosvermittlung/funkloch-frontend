@@ -112,6 +112,7 @@ type ItemListPage struct {
 type ItemViewPage struct {
 	Default DefaultPage
 	Ite     storeItemResponse
+	Faults  []Fault
 }
 
 type ItemEditPage struct {

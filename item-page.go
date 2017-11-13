@@ -177,14 +177,20 @@ func viewItem(w http.ResponseWriter, r *http.Request, token string) {
 	id := r.FormValue("id")
 	err := sendauthorizedHTTPRequest("GET", "storeitem/"+id, token, nil, &ivp.Ite)
 	if err != nil {
-		ivp.Default.Message = BuildMessage(errormessage, "Error creating event request: "+err.Error())
+		ivp.Default.Message = BuildMessage(errormessage, "Error getting item request: "+err.Error())
+		showtemplate(w, tp, ivp)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id+"/fault", token, nil, &ivp.Faults)
+	if err != nil {
+		ivp.Default.Message = BuildMessage(errormessage, "Error getting fault request: "+err.Error())
 		showtemplate(w, tp, ivp)
 		return
 	}
 	showtemplate(w, tp, ivp)
 }
 
-func itemLabel(w http.ResponseWriter, r *http.Request, tonken string) {
+func itemLabel(w http.ResponseWriter, r *http.Request, token string) {
 
 	s := r.FormValue("store")
 	e := r.FormValue("EAN")
@@ -193,6 +199,46 @@ func itemLabel(w http.ResponseWriter, r *http.Request, tonken string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func addFault(w http.ResponseWriter, r *http.Request, token string) {
+	var ivp ItemViewPage
+	tp := "templates/item/view.html"
+	ivp.Default.Sidebar = BuildSidebar(ItemsActive)
+	ivp.Default.Pagename = "View Item"
+	id := r.FormValue("itemid")
+	c := r.FormValue("comment")
+	iid, err := strconv.Atoi(id)
+	if err != nil {
+		ivp.Default.Message = BuildMessage(errormessage, "Error converting Storeitem ID"+err.Error())
+		showtemplate(w, tp, ivp)
+		return
+	}
+	var f Fault
+	f.Comment = c
+	f.StoreItemID = iid
+	f.Status = FaultStatusNew
+	b := new(bytes.Buffer)
+	encoder := json.NewEncoder(b)
+	encoder.Encode(f)
+	err = sendauthorizedHTTPRequest("POST", "fault/", token, b, nil)
+	if err != nil {
+		ivp.Default.Message = BuildMessage(errormessage, "Error posting fault request: "+err.Error())
+		showtemplate(w, tp, ivp)
+		return
+	}
+	if err != nil {
+		ivp.Default.Message = BuildMessage(errormessage, "Error getting item request: "+err.Error())
+		showtemplate(w, tp, ivp)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id+"/fault", token, nil, &ivp.Faults)
+	if err != nil {
+		ivp.Default.Message = BuildMessage(errormessage, "Error getting fault request: "+err.Error())
+		showtemplate(w, tp, ivp)
+		return
+	}
+	showtemplate(w, tp, ivp)
 }
 
 func itemHandler(w http.ResponseWriter, r *http.Request) {
@@ -219,6 +265,8 @@ func itemHandler(w http.ResponseWriter, r *http.Request) {
 		viewItem(w, r, token)
 	case "label":
 		itemLabel(w, r, token)
+	case "add-fault":
+		addFault(w, r, token)
 	default:
 		showItemlist(w, token)
 	}
