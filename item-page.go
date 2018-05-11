@@ -227,6 +227,7 @@ func addFault(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, ivp)
 		return
 	}
+	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id, token, nil, &ivp.Ite)
 	if err != nil {
 		ivp.Default.Message = BuildMessage(errormessage, "Error getting item request: "+err.Error())
 		showtemplate(w, tp, ivp)
