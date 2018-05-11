@@ -65,6 +65,21 @@ const (
 	FaultStatusUnfixable
 )
 
+func (f FaultStatus) String() string {
+	switch f {
+	case FaultStatusNew:
+		return "New"
+	case FaultStatusInRepair:
+		return "In Repair"
+	case FaultStatusFixed:
+		return "Fixed"
+	case FaultStatusUnfixable:
+		return "Unfixable"
+	default:
+		return "Unkown Faultstatus"
+	}
+}
+
 type Fault struct {
 	FaultID     int
 	StoreItemID int

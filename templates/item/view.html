@@ -123,7 +123,7 @@
                   {{range $index, $element := .Faults}}
                   <tr>
                     <td>{{$element.Comment}}</td>
-                    <td>{{$element.Status}}</td>
+                    <td>{{$element.Status.String}}</td>
                   </tr>
                   {{end}}
                 </tbody>
