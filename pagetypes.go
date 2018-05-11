@@ -133,7 +133,7 @@ type ItemNewItem struct {
 	Store string
 }
 
-type ItemNewPAge struct {
+type ItemNewPage struct {
 	Default DefaultPage
 	IDs     []ItemNewItem
 }

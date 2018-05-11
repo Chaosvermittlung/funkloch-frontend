@@ -46,7 +46,7 @@ func showItemAddForm(w http.ResponseWriter, token string) {
 func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 	var iap ItemAddPage
 	tp := "templates/item/add.html"
-	var inp ItemNewPAge
+	var inp ItemNewPage
 	tp2 := "templates/item/new.html"
 	iap.Default.Sidebar = BuildSidebar(ItemsActive)
 	iap.Default.Pagename = "Add Item"
