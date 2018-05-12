@@ -137,3 +137,8 @@ type ItemNewPage struct {
 	Default DefaultPage
 	IDs     []ItemNewItem
 }
+
+type FaultListPage struct {
+	Default DefaultPage
+	Faults  []faultResponse
+}

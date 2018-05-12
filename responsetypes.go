@@ -110,3 +110,9 @@ type storeItemResponse struct {
 	Store     Store
 	Equipment Equipment
 }
+
+type faultResponse struct {
+	Fault Fault
+	Code  int
+	Name  string
+}
