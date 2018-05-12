@@ -58,7 +58,7 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           {{.Default.Message}}
           <h2 class="sub-header">{{.Default.Pagename}}</h2>
-          <form method="Post">
+          <form method="POST">
             <fieldset>
             <div class="form-group">
               <label class="control-label" for="idinput">ID</label>  
@@ -77,27 +77,27 @@
 
             <!-- Text input-->
             <div class="form-group">
-              <label class="control-label" for="equipment">Fault State</label>
-              <select class="form-control" name="equipment">
+              <label class="control-label" for="state">Fault State</label>
+              <select class="form-control" name="state">
                   {{range $index, $element := $.States}}
                     {{if eq $element $.Fault.Fault.Status}}
-                      <option value="{{$element}}" selected>{{$element.String}}</option>
+                      <option value="{{$index}}" selected>{{$element.String}}</option>
                     {{else}}
-                      <option value="{{$element}}">{{$element.String}}</option>
+                      <option value="{{$index}}">{{$element.String}}</option>
                     {{end}}
                   {{end}}
               </select>
             </div>
 
             <div class="form-group">
-              <label class="control-label" for="commentinput">ID</label>  
-              <input id="commentinput" type="text" class="form-control input-md" value="{{.Fault.Fault.Comment}}">
+              <label class="control-label" for="commentinput">Comment</label>  
+              <input id="commentinput" name="comment" type="text" class="form-control input-md" value="{{.Fault.Fault.Comment}}">
             </div>
             <!-- Button -->
             <div class="form-group">
                 <button id="savebutton" type="submit" name="action" value="patch" class="btn btn-primary">Save</button>
                 <button id="deletebutton" type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
-                <input type="hidden" name="itemid" value="{{.Fault.Fault.FaultID}}"/>
+                <input type="hidden" name="faultid" value="{{.Fault.Fault.FaultID}}"/>
             </div>
 
             </fieldset>

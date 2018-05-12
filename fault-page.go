@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"strconv"
 )
@@ -46,6 +48,36 @@ func showFaultEditForm(w http.ResponseWriter, r *http.Request, token string) {
 	showtemplate(w, tp, fep)
 }
 
+func patchFault(w http.ResponseWriter, r *http.Request, token string) {
+	var fep FaultEditPage
+	tp := "templates/fault/edit.html"
+	fep.Default.Sidebar = BuildSidebar(FaultsActive)
+	fep.Default.Pagename = "Fault Item"
+	id := r.FormValue("faultid")
+	c := r.FormValue("comment")
+	s := r.FormValue("state")
+	sid, err := strconv.Atoi(s)
+	if err != nil {
+		fep.Default.Message = BuildMessage(errormessage, "Error converting Faultstate"+err.Error())
+		showtemplate(w, tp, fep)
+		return
+	}
+	var f Fault
+	f.Comment = c
+	f.Status = FaultStatus(sid)
+	b := new(bytes.Buffer)
+	encoder := json.NewEncoder(b)
+	encoder.Encode(f)
+
+	err = sendauthorizedHTTPRequest("PATCH", "fault/"+id, token, b, nil)
+	if err != nil {
+		fep.Default.Message = BuildMessage(errormessage, "Error sending Fault request: "+err.Error())
+		showtemplate(w, tp, fep)
+		return
+	}
+	http.Redirect(w, r, "/fault", http.StatusSeeOther)
+}
+
 func faultHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -63,7 +95,7 @@ func faultHandler(w http.ResponseWriter, r *http.Request) {
 	case "edit":
 		showFaultEditForm(w, r, token)
 	case "patch":
-		//patchItem(w, r, token)
+		patchFault(w, r, token)
 	case "delete":
 		//deleteItem(w, r, token)
 	case "view":
