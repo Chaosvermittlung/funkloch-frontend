@@ -78,6 +78,21 @@ func patchFault(w http.ResponseWriter, r *http.Request, token string) {
 	http.Redirect(w, r, "/fault", http.StatusSeeOther)
 }
 
+func deleteFault(w http.ResponseWriter, r *http.Request, token string) {
+	var fep FaultEditPage
+	tp := "templates/fault/edit.html"
+	fep.Default.Sidebar = BuildSidebar(FaultsActive)
+	fep.Default.Pagename = "Fault Item"
+	id := r.FormValue("faultid")
+	err := sendauthorizedHTTPRequest("DELETE", "fault/"+id, token, nil, nil)
+	if err != nil {
+		fep.Default.Message = BuildMessage(errormessage, "Error sending Fault request: "+err.Error())
+		showtemplate(w, tp, fep)
+		return
+	}
+	http.Redirect(w, r, "/fault", http.StatusSeeOther)
+}
+
 func faultHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -88,22 +103,12 @@ func faultHandler(w http.ResponseWriter, r *http.Request) {
 
 	a := r.FormValue("action")
 	switch a {
-	case "add":
-		//showItemAddForm(w, token)
-	case "save":
-		//saveNewItem(w, r, token)
 	case "edit":
 		showFaultEditForm(w, r, token)
 	case "patch":
 		patchFault(w, r, token)
 	case "delete":
-		//deleteItem(w, r, token)
-	case "view":
-		//viewItem(w, r, token)
-	case "label":
-		//itemLabel(w, r, token)
-	case "add-fault":
-		//addFault(w, r, token)
+		deleteFault(w, r, token)
 	default:
 		showFaultlist(w, token)
 	}
