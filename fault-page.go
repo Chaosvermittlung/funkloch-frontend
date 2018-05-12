@@ -1,6 +1,10 @@
 package main
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+	"strconv"
+)
 
 func showFaultlist(w http.ResponseWriter, token string) {
 	var flp FaultListPage
@@ -15,6 +19,33 @@ func showFaultlist(w http.ResponseWriter, token string) {
 		return
 	}
 	showtemplate(w, tp, flp)
+}
+
+func showFaultEditForm(w http.ResponseWriter, r *http.Request, token string) {
+	var fep FaultEditPage
+	tp := "templates/fault/edit.html"
+	fep.Default.Sidebar = BuildSidebar(FaultsActive)
+	fep.Default.Pagename = "Edit Fault"
+	id := r.FormValue("id")
+	err := sendauthorizedHTTPRequest("GET", "fault/"+id, token, nil, &fep.Fault.Fault)
+	if err != nil {
+		fep.Default.Message = BuildMessage(errormessage, "Error sending Fault request: "+err.Error())
+		showtemplate(w, tp, fep)
+		return
+	}
+	sid := strconv.Itoa(fep.Fault.Fault.StoreItemID)
+	log.Println(sid)
+	var sir storeItemResponse
+	err = sendauthorizedHTTPRequest("GET", "storeitem/"+sid, token, nil, &sir)
+	if err != nil {
+		fep.Default.Message = BuildMessage(errormessage, "Error sending Storitem request: "+err.Error())
+		showtemplate(w, tp, fep)
+		return
+	}
+	fep.Fault.Code = sir.StoreItem.Code
+	fep.Fault.Name = sir.Equipment.Name
+	fep.States = getAllFaultstates()
+	showtemplate(w, tp, fep)
 }
 
 func faultHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +63,7 @@ func faultHandler(w http.ResponseWriter, r *http.Request) {
 	case "save":
 		//saveNewItem(w, r, token)
 	case "edit":
-		//showItemEditForm(w, r, token)
+		showFaultEditForm(w, r, token)
 	case "patch":
 		//patchItem(w, r, token)
 	case "delete":

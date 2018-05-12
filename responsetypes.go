@@ -80,6 +80,15 @@ func (f FaultStatus) String() string {
 	}
 }
 
+func getAllFaultstates() []FaultStatus {
+	var res []FaultStatus
+	res = append(res, FaultStatusNew)
+	res = append(res, FaultStatusInRepair)
+	res = append(res, FaultStatusFixed)
+	res = append(res, FaultStatusUnfixable)
+	return res
+}
+
 type Fault struct {
 	FaultID     int
 	StoreItemID int

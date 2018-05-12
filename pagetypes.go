@@ -142,3 +142,9 @@ type FaultListPage struct {
 	Default DefaultPage
 	Faults  []faultResponse
 }
+
+type FaultEditPage struct {
+	Default DefaultPage
+	Fault   faultResponse
+	States  []FaultStatus
+}
