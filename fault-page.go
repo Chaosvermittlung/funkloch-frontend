@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -34,7 +33,6 @@ func showFaultEditForm(w http.ResponseWriter, r *http.Request, token string) {
 		return
 	}
 	sid := strconv.Itoa(fep.Fault.Fault.StoreItemID)
-	log.Println(sid)
 	var sir storeItemResponse
 	err = sendauthorizedHTTPRequest("GET", "storeitem/"+sid, token, nil, &sir)
 	if err != nil {
