@@ -106,18 +106,18 @@ type StoreAddPage struct {
 
 type ItemListPage struct {
 	Default DefaultPage
-	Items   []storeItemResponse
+	Items   []itemResponse
 }
 
 type ItemViewPage struct {
 	Default DefaultPage
-	Ite     storeItemResponse
+	Ite     itemResponse
 	Faults  []Fault
 }
 
 type ItemEditPage struct {
 	Default    DefaultPage
-	Ite        storeItemResponse
+	Ite        itemResponse
 	Stores     []Store
 	Equipments []Equipment
 }
@@ -129,8 +129,8 @@ type ItemAddPage struct {
 }
 
 type ItemNewItem struct {
-	ID    string
-	Store string
+	ID  string
+	Box string
 }
 
 type ItemNewPage struct {

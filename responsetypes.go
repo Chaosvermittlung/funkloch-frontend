@@ -13,18 +13,21 @@ type authResponse struct {
 }
 
 type Event struct {
-	EventID int
-	Name    string
-	Start   time.Time
-	End     time.Time
-	Adress  string
+	EventID      int           `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	Name         string        `gorm:"not null"`
+	Start        time.Time     `gorm:"not null"`
+	End          time.Time     `gorm:"not null"`
+	Adress       string        `gorm:"not null"`
+	Participants []Participant `gorm:"foreignkey:EventID;association_foreignkey:EventID"`
 }
 
 type Store struct {
-	StoreID int
-	Name    string
-	Adress  string
-	Manager int
+	StoreID   int    `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	Name      string `gorm:"not null"`
+	Adress    string `gorm:"not null"`
+	Manager   User   `gorm:"not null"`
+	ManagerID int    `gorm:"foreignkey:ManagerID;not null"`
+	Boxes     []Box  `gorm:"foreignkey:StoreID;association_foreignkey:StoreID"`
 }
 
 type UserRight int
@@ -35,12 +38,12 @@ const (
 )
 
 type User struct {
-	UserID   int       `json:"id"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Salt     string    `json:"-"`
-	Email    string    `json:"email"`
-	Right    UserRight `json:"userright"`
+	UserID   int       `json:"id" gorm:"primary_key;AUTO_INCREMENT;not null"`
+	Username string    `json:"username" gorm:"not null"`
+	Password string    `json:"password" gorm:"not null"`
+	Salt     string    `json:"-" gorm:"not null"`
+	Email    string    `json:"email" gorm:"not null"`
+	Right    UserRight `json:"userright" gorm:"not null"`
 }
 
 type eventParticipiantsResponse struct {
@@ -49,11 +52,21 @@ type eventParticipiantsResponse struct {
 	Departure time.Time
 }
 
-type StoreItem struct {
-	StoreItemID int
-	StoreID     int
-	EquipmentID int
-	Code        int
+type Box struct {
+	BoxID       int    `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	StoreID     int    `gorm:"not null"`
+	Items       []Item `gorm:"foreignkey:BoxID;association_foreignkey:BoxID"`
+	Code        int    `gorm:"type:integer(13)"`
+	Description string `gorm:"not null"`
+}
+
+type Item struct {
+	ItemID      int `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	BoxID       int
+	EquipmentID int       `gorm:"not null"`
+	Equipment   Equipment `gorm:"not null"`
+	Code        int       `gorm:"type:integer(13)"`
+	Faults      []Fault   `gorm:"foreignkey:ItemID;association_foreignkey:ItemID"`
 }
 
 type FaultStatus int
@@ -90,32 +103,35 @@ func getAllFaultstates() []FaultStatus {
 }
 
 type Fault struct {
-	FaultID     int
-	StoreItemID int
-	Status      FaultStatus
-	Comment     string
+	FaultID int         `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	ItemID  int         `gorm:"not null"`
+	Status  FaultStatus `gorm:"not null"`
+	Comment string      `gorm:"not null"`
 }
 
 type Equipment struct {
-	EquipmentID int
-	Name        string
+	EquipmentID int    `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	Name        string `gorm:"not null"`
 }
 
 type Packinglist struct {
-	PackinglistID int
-	Name          string
-	EventID       int
+	PackinglistID int    `gorm:"primary_key;AUTO_INCREMENT;not null"`
+	Name          string `gorm:"not null"`
+	EventID       int    `gorm:"not null"`
+	Event         Event  `gorm:"not null"`
+	Boxes         []Box  `gorm:"many2many:packinglist_boxes;"`
 }
 
 type Participant struct {
-	UserID    int
-	EventID   int
-	Arrival   time.Time
-	Departure time.Time
+	UserID    int       `gorm:"type:integer;primary_key;not null"`
+	User      User      `gorm:"not null;foreignkey:UserID;association_foreignkey:UserID"`
+	EventID   int       `gorm:"type:integer;primary_key;not null"`
+	Arrival   time.Time `gorm:"not null"`
+	Departure time.Time `gorm:"not null"`
 }
 
-type storeItemResponse struct {
-	StoreItem StoreItem
+type itemResponse struct {
+	Item      Item
 	Store     Store
 	Equipment Equipment
 }

@@ -140,8 +140,8 @@ func mainhandler(w http.ResponseWriter, r *http.Request) {
 	}
 	mp.Event.Registred = len(eprs)
 
-	var ss []StoreItem
-	err = sendauthorizedHTTPRequest("GET", "storeitem/list", token, nil, &ss)
+	var ss []Item
+	err = sendauthorizedHTTPRequest("GET", "item/list", token, nil, &ss)
 	if err != nil {
 		mp.Default.Message = BuildMessage(errormessage, "Error creating storeitem request: "+err.Error())
 		showtemplate(w, tp, mp)

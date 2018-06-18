@@ -34,15 +34,15 @@ func showFaultEditForm(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, fep)
 		return
 	}
-	sid := strconv.Itoa(fep.Fault.Fault.StoreItemID)
-	var sir storeItemResponse
-	err = sendauthorizedHTTPRequest("GET", "storeitem/"+sid, token, nil, &sir)
+	sid := strconv.Itoa(fep.Fault.Fault.ItemID)
+	var sir itemResponse
+	err = sendauthorizedHTTPRequest("GET", "item/"+sid, token, nil, &sir)
 	if err != nil {
 		fep.Default.Message = BuildMessage(errormessage, "Error sending Storitem request: "+err.Error())
 		showtemplate(w, tp, fep)
 		return
 	}
-	fep.Fault.Code = sir.StoreItem.Code
+	fep.Fault.Code = sir.Item.Code
 	fep.Fault.Name = sir.Equipment.Name
 	fep.States = getAllFaultstates()
 	showtemplate(w, tp, fep)

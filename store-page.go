@@ -53,7 +53,7 @@ func saveNewStore(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, sap)
 		return
 	}
-	s.Manager = mnid
+	s.Manager.UserID = mnid
 	b := new(bytes.Buffer)
 	encoder := json.NewEncoder(b)
 	encoder.Encode(s)
@@ -123,7 +123,7 @@ func patchStore(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, sep)
 		return
 	}
-	s.Manager = mnid
+	s.Manager.UserID = mnid
 	b := new(bytes.Buffer)
 	encoder := json.NewEncoder(b)
 	encoder.Encode(s)

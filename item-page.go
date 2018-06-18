@@ -14,7 +14,7 @@ func showItemlist(w http.ResponseWriter, token string) {
 	ilp.Default.Sidebar = BuildSidebar(ItemsActive)
 	ilp.Default.Pagename = "Item List"
 
-	err := sendauthorizedHTTPRequest("GET", "storeitem/list", token, nil, &ilp.Items)
+	err := sendauthorizedHTTPRequest("GET", "item/list", token, nil, &ilp.Items)
 	if err != nil {
 		ilp.Default.Message = BuildMessage(errormessage, "Error creating item/list request: "+err.Error())
 		showtemplate(w, tp, ilp)
@@ -51,11 +51,11 @@ func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 	iap.Default.Sidebar = BuildSidebar(ItemsActive)
 	iap.Default.Pagename = "Add Item"
 	e := r.FormValue("equipment")
-	s := r.FormValue("store")
+	bo := r.FormValue("box")
 	c := r.FormValue("count")
-	sid, err := strconv.Atoi(s)
+	bid, err := strconv.Atoi(bo)
 	if err != nil {
-		iap.Default.Message = BuildMessage(errormessage, "Error converting Store ID"+err.Error())
+		iap.Default.Message = BuildMessage(errormessage, "Error converting Box ID"+err.Error())
 		showtemplate(w, tp, iap)
 		return
 	}
@@ -74,29 +74,29 @@ func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 
 	inp.Default.Sidebar = BuildSidebar(ItemsActive)
 	for i := 0; i < co; i++ {
-		var si StoreItem
-		var so Store
+		var si Item
+		var bx Box
 		var ini ItemNewItem
 		si.EquipmentID = eid
-		si.StoreID = sid
+		si.BoxID = bid
 		b := new(bytes.Buffer)
 		encoder := json.NewEncoder(b)
 		encoder.Encode(si)
-		var res StoreItem
-		err = sendauthorizedHTTPRequest("POST", "storeitem/", token, b, &res)
+		var res Item
+		err = sendauthorizedHTTPRequest("POST", "item/", token, b, &res)
 		if err != nil {
 			inp.Default.Message = BuildMessage(errormessage, "Error sending StoreItem request: "+err.Error())
 			showtemplate(w, tp2, inp)
 			return
 		}
-		err = sendauthorizedHTTPRequest("GET", "store/"+s, token, nil, &so)
+		err = sendauthorizedHTTPRequest("GET", "box/"+bo, token, nil, &bx)
 		if err != nil {
 			inp.Default.Message = BuildMessage(errormessage, "Error sending Store request: "+err.Error())
 			showtemplate(w, tp2, inp)
 			return
 		}
 		ini.ID = strconv.Itoa(res.Code)
-		ini.Store = so.Name
+		ini.Box = "Box Code: " + strconv.Itoa(bx.Code)
 		inp.IDs = append(inp.IDs, ini)
 	}
 	showtemplate(w, tp2, inp)
@@ -108,7 +108,7 @@ func showItemEditForm(w http.ResponseWriter, r *http.Request, token string) {
 	iep.Default.Sidebar = BuildSidebar(ItemsActive)
 	iep.Default.Pagename = "Edit Item"
 	id := r.FormValue("itemid")
-	err := sendauthorizedHTTPRequest("GET", "storeitem/"+id, token, nil, &iep.Ite)
+	err := sendauthorizedHTTPRequest("GET", "item/"+id, token, nil, &iep.Ite)
 	if err != nil {
 		iep.Default.Message = BuildMessage(errormessage, "Error sending Event request: "+err.Error())
 		showtemplate(w, tp, iep)
@@ -140,8 +140,8 @@ func patchItem(w http.ResponseWriter, r *http.Request, token string) {
 	iep.Default.Pagename = "Edit Item"
 	id := r.FormValue("itemid")
 	e := r.FormValue("equipment")
-	s := r.FormValue("store")
-	sid, err := strconv.Atoi(s)
+	b := r.FormValue("box")
+	bid, err := strconv.Atoi(b)
 	if err != nil {
 		iep.Default.Message = BuildMessage(errormessage, "Error converting Store ID"+err.Error())
 		showtemplate(w, tp, iep)
@@ -153,14 +153,14 @@ func patchItem(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, iep)
 		return
 	}
-	var si StoreItem
+	var si Item
 	si.EquipmentID = eid
-	si.StoreID = sid
-	b := new(bytes.Buffer)
-	encoder := json.NewEncoder(b)
+	si.BoxID = bid
+	by := new(bytes.Buffer)
+	encoder := json.NewEncoder(by)
 	encoder.Encode(si)
 
-	err = sendauthorizedHTTPRequest("PATCH", "storeitem/"+id, token, b, nil)
+	err = sendauthorizedHTTPRequest("PATCH", "storeitem/"+id, token, by, nil)
 	if err != nil {
 		iep.Default.Message = BuildMessage(errormessage, "Error sending StoreItem request: "+err.Error())
 		showtemplate(w, tp, iep)
@@ -216,7 +216,7 @@ func addFault(w http.ResponseWriter, r *http.Request, token string) {
 	}
 	var f Fault
 	f.Comment = c
-	f.StoreItemID = iid
+	f.ItemID = iid
 	f.Status = FaultStatusNew
 	b := new(bytes.Buffer)
 	encoder := json.NewEncoder(b)
