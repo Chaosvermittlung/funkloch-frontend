@@ -28,15 +28,21 @@ func showItemAddForm(w http.ResponseWriter, token string) {
 	tp := "templates/item/add.html"
 	iap.Default.Sidebar = BuildSidebar(ItemsActive)
 	iap.Default.Pagename = "Add Item"
-	err := sendauthorizedHTTPRequest("GET", "store/list", token, nil, &iap.Stores)
+	err := sendauthorizedHTTPRequest("GET", "equipment/list", token, nil, &iap.Equipments)
 	if err != nil {
-		iap.Default.Message = BuildMessage(errormessage, "Error sending Stores request: "+err.Error())
+		iap.Default.Message = BuildMessage(errormessage, "Error sending Equipment request: "+err.Error())
 		showtemplate(w, tp, iap)
 		return
 	}
-	err = sendauthorizedHTTPRequest("GET", "equipment/list", token, nil, &iap.Equipments)
+	err = sendauthorizedHTTPRequest("GET", "box/list", token, nil, &iap.Boxes)
 	if err != nil {
-		iap.Default.Message = BuildMessage(errormessage, "Error sending Equipment request: "+err.Error())
+		iap.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, iap)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "store/list", token, nil, &iap.Stores)
+	if err != nil {
+		iap.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
 		showtemplate(w, tp, iap)
 		return
 	}
@@ -75,7 +81,7 @@ func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 	inp.Default.Sidebar = BuildSidebar(ItemsActive)
 	for i := 0; i < co; i++ {
 		var si Item
-		var bx Box
+		var bx boxResponse
 		var ini ItemNewItem
 		si.EquipmentID = eid
 		si.BoxID = bid
@@ -96,7 +102,7 @@ func saveNewItem(w http.ResponseWriter, r *http.Request, token string) {
 			return
 		}
 		ini.ID = strconv.Itoa(res.Code)
-		ini.Box = "Box Code: " + strconv.Itoa(bx.Code)
+		ini.Box = strconv.Itoa(bx.Box.Code)
 		inp.IDs = append(inp.IDs, ini)
 	}
 	showtemplate(w, tp2, inp)
@@ -110,13 +116,13 @@ func showItemEditForm(w http.ResponseWriter, r *http.Request, token string) {
 	id := r.FormValue("itemid")
 	err := sendauthorizedHTTPRequest("GET", "item/"+id, token, nil, &iep.Ite)
 	if err != nil {
-		iep.Default.Message = BuildMessage(errormessage, "Error sending Event request: "+err.Error())
+		iep.Default.Message = BuildMessage(errormessage, "Error sending Item request: "+err.Error())
 		showtemplate(w, tp, iep)
 		return
 	}
-	err = sendauthorizedHTTPRequest("GET", "store/list", token, nil, &iep.Stores)
+	err = sendauthorizedHTTPRequest("GET", "box/list", token, nil, &iep.Boxes)
 	if err != nil {
-		iep.Default.Message = BuildMessage(errormessage, "Error sending Stores request: "+err.Error())
+		iep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
 		showtemplate(w, tp, iep)
 		return
 	}
@@ -160,7 +166,7 @@ func patchItem(w http.ResponseWriter, r *http.Request, token string) {
 	encoder := json.NewEncoder(by)
 	encoder.Encode(si)
 
-	err = sendauthorizedHTTPRequest("PATCH", "storeitem/"+id, token, by, nil)
+	err = sendauthorizedHTTPRequest("PATCH", "item/"+id, token, by, nil)
 	if err != nil {
 		iep.Default.Message = BuildMessage(errormessage, "Error sending StoreItem request: "+err.Error())
 		showtemplate(w, tp, iep)
@@ -175,13 +181,13 @@ func viewItem(w http.ResponseWriter, r *http.Request, token string) {
 	ivp.Default.Sidebar = BuildSidebar(ItemsActive)
 	ivp.Default.Pagename = "View Item"
 	id := r.FormValue("id")
-	err := sendauthorizedHTTPRequest("GET", "storeitem/"+id, token, nil, &ivp.Ite)
+	err := sendauthorizedHTTPRequest("GET", "item/"+id, token, nil, &ivp.Ite)
 	if err != nil {
 		ivp.Default.Message = BuildMessage(errormessage, "Error getting item request: "+err.Error())
 		showtemplate(w, tp, ivp)
 		return
 	}
-	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id+"/fault", token, nil, &ivp.Faults)
+	err = sendauthorizedHTTPRequest("GET", "item/"+id+"/fault", token, nil, &ivp.Faults)
 	if err != nil {
 		ivp.Default.Message = BuildMessage(errormessage, "Error getting fault request: "+err.Error())
 		showtemplate(w, tp, ivp)
@@ -192,10 +198,10 @@ func viewItem(w http.ResponseWriter, r *http.Request, token string) {
 
 func itemLabel(w http.ResponseWriter, r *http.Request, token string) {
 
-	s := r.FormValue("store")
+	b := r.FormValue("box")
 	e := r.FormValue("EAN")
 	w.Header().Set("Content-type", "application/pdf")
-	err := createlabel(e, s, w)
+	err := createlabel(e, b, w)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -227,13 +233,13 @@ func addFault(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, ivp)
 		return
 	}
-	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id, token, nil, &ivp.Ite)
+	err = sendauthorizedHTTPRequest("GET", "item/"+id, token, nil, &ivp.Ite)
 	if err != nil {
 		ivp.Default.Message = BuildMessage(errormessage, "Error getting item request: "+err.Error())
 		showtemplate(w, tp, ivp)
 		return
 	}
-	err = sendauthorizedHTTPRequest("GET", "storeitem/"+id+"/fault", token, nil, &ivp.Faults)
+	err = sendauthorizedHTTPRequest("GET", "item/"+id+"/fault", token, nil, &ivp.Faults)
 	if err != nil {
 		ivp.Default.Message = BuildMessage(errormessage, "Error getting fault request: "+err.Error())
 		showtemplate(w, tp, ivp)

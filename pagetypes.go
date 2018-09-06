@@ -118,14 +118,15 @@ type ItemViewPage struct {
 type ItemEditPage struct {
 	Default    DefaultPage
 	Ite        itemResponse
-	Stores     []Store
+	Boxes      []boxResponse
 	Equipments []Equipment
 }
 
 type ItemAddPage struct {
 	Default    DefaultPage
-	Stores     []Store
 	Equipments []Equipment
+	Boxes      []boxResponse
+	Stores     []Store
 }
 
 type ItemNewItem struct {
@@ -147,4 +148,9 @@ type FaultEditPage struct {
 	Default DefaultPage
 	Fault   faultResponse
 	States  []FaultStatus
+}
+
+type BoxListPage struct {
+	Default DefaultPage
+	Boxes   []boxResponse
 }

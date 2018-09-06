@@ -133,7 +133,14 @@ type Participant struct {
 type itemResponse struct {
 	Item      Item
 	Store     Store
+	Box       Box
 	Equipment Equipment
+}
+
+type boxResponse struct {
+	Box   Box
+	Store Store
+	User  User
 }
 
 type faultResponse struct {

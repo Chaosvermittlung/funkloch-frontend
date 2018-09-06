@@ -62,7 +62,7 @@
             <fieldset>
             <div class="form-group">
               <label class="control-label" for="idinput">ID</label>  
-              <input id="idinput" type="text" class="form-control input-md" disabled="" value="{{.Ite.StoreItem.StoreItemID}}">
+              <input id="idinput" type="text" class="form-control input-md" disabled="" value="{{.Ite.Item.ItemID}}">
             </div>
 
             <!-- Text input-->
@@ -70,7 +70,7 @@
               <label class="control-label" for="equipment">Equipment Type</label>
               <select class="form-control" name="equipment">
                   {{range $index, $element := $.Equipments}}
-                    {{if eq $element.EquipmentID $.Ite.StoreItem.EquipmentID}}
+                    {{if eq $element.EquipmentID $.Ite.Item.EquipmentID}}
                       <option value="{{$element.EquipmentID}}" selected>{{$element.Name}}</option>
                     {{else}}
                       <option value="{{$element.EquipmentID}}">{{$element.Name}}</option>
@@ -80,13 +80,13 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label" for="store">Store</label>
-              <select class="form-control" name="store">
-                  {{range $index, $element := $.Stores}}
-                    {{if eq $element.StoreID $.Ite.StoreItem.StoreID}}
-                      <option value="{{$element.StoreID}}" selected>{{$element.Name}}</option>
+              <label class="control-label" for="box">Box</label>
+              <select class="form-control" name="box">
+                  {{range $index, $element := $.Boxes}}
+                    {{if eq $element.Box.BoxID $.Ite.Item.BoxID}}
+                      <option value="{{$element.Box.BoxID}}" selected>Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
                     {{else}}
-                      <option value="{{$element.StoreID}}">{{$element.Name}}</option>
+                      <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
                     {{end}}
                   {{end}}
               </select>
@@ -95,7 +95,7 @@
             <div class="form-group">
                 <button id="savebutton" type="submit" name="action" value="patch" class="btn btn-primary">Save</button>
                 <button id="deletebutton" type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
-                <input type="hidden" name="itemid" value="{{.Ite.StoreItem.StoreItemID}}"/>
+                <input type="hidden" name="itemid" value="{{.Ite.Item.ItemID}}"/>
             </div>
 
             </fieldset>

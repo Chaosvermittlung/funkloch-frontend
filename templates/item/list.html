@@ -67,6 +67,7 @@
                 <tr>
                   <th>ID</th>
                   <th>Item Type</th>
+                  <th>Box ID</th>
                   <th>Store</th>
                   <th></th>
                 </tr>
@@ -74,15 +75,16 @@
               <tbody>
                 {{range $index, $element := .Items}}
                 <tr>
-                  <td>{{$element.StoreItem.StoreItemID}}</td>
+                  <td>{{$element.Item.ItemID}}</td>
                   <td>{{$element.Equipment.Name}}</td>
+                  <td>{{$element.Box.BoxID}}</td>
                   <td>{{$element.Store.Name}}</td>
                   <td>
                       <form method="GET">
                         <button type="submit" name="action" value="view" class="btn btn-default btn-xs" aria-label="Right Align">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                         </button>
-                        <input type="hidden" name="id" value="{{$element.StoreItem.StoreItemID}}"/>
+                        <input type="hidden" name="id" value="{{$element.Item.ItemID}}"/>
                         
                       </form>
                   </td>

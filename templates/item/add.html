@@ -72,11 +72,11 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label" for="store">Store</label>
-              <select class="form-control" name="store">
-                <option selected disabled>Choose Store</option>
-                {{range $index, $element := $.Stores}}
-                      <option value="{{$element.StoreID}}">{{$element.Name}}</option>
+              <label class="control-label" for="box">Box</label>
+              <select class="form-control" name="box">
+                <option selected disabled>Choose Box</option>
+                {{range $index, $element := $.Boxes}}
+                      <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
                 {{end}}
               </select>
             </div>
