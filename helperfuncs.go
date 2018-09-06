@@ -34,26 +34,37 @@ const cookieplace = "funkloch"
 var navitems [][]template.HTML
 var sc = securecookie.New(securecookie.GenerateRandomKey(64), securecookie.GenerateRandomKey(32))
 
+func createNavitem(name string, link string) []template.HTML {
+	active := `<li class="active"><a href="/` + link + `">` + name + ` <span class="sr-only">(current)</span></a></li>`
+	inactive := `<li><a href="/` + link + `">` + name + `</a></li>`
+	activehtml := template.HTML(active)
+	inactivehtml := template.HTML(inactive)
+	return []template.HTML{activehtml, inactivehtml}
+}
+
 func init() {
-	item1 := []template.HTML{`<li class="active"><a href="/">Overview <span class="sr-only">(current)</span></a></li>`, `<li><a href="/">Overview</a></li>`}
-	item2 := []template.HTML{`<li class="active"><a href="/item">Items <span class="sr-only">(current)</span></a></li>`, `<li><a href="/item">Items</a></li>`}
-	item3 := []template.HTML{`<li class="active"><a href="/equipment">Equipment <span class="sr-only">(current)</span></a></li>`, `<li><a href="/equipment">Equipment</a></li>`}
-	item4 := []template.HTML{`<li class="active"><a href="/event">Event <span class="sr-only">(current)</span></a></li>`, `<li><a href="/event">Events</a></li>`}
-	item5 := []template.HTML{`<li class="active"><a href="/store">Stores <span class="sr-only">(current)</span></a></li>`, `<li><a href="/store">Stores</a></li>`}
-	item6 := []template.HTML{`<li class="active"><a href="/fault">Faults <span class="sr-only">(current)</span></a></li>`, `<li><a href="/fault">Faults</a></li>`}
-	item7 := []template.HTML{`<li class="active"><a href="/wishlist">Wishlists <span class="sr-only">(current)</span></a></li>`, `<li><a href="/wishlist">Wishlists</a></li>`}
-	navitems = append(navitems, item1)
-	navitems = append(navitems, item2)
-	navitems = append(navitems, item3)
-	navitems = append(navitems, item4)
-	navitems = append(navitems, item5)
-	navitems = append(navitems, item6)
-	navitems = append(navitems, item7)
+	overview := createNavitem("Overview", "")
+	item := createNavitem("Items", "item")
+	box := createNavitem("Boxes", "box")
+	equipment := createNavitem("Equipment", "equipment")
+	event := createNavitem("Events", "event")
+	store := createNavitem("Stores", "store")
+	fault := createNavitem("Faults", "fault")
+	whishlist := createNavitem("Whishlists", "whishlist")
+	navitems = append(navitems, overview)
+	navitems = append(navitems, item)
+	navitems = append(navitems, box)
+	navitems = append(navitems, equipment)
+	navitems = append(navitems, event)
+	navitems = append(navitems, store)
+	navitems = append(navitems, fault)
+	navitems = append(navitems, whishlist)
 }
 
 const (
 	OverviewActive int = 1 + iota
 	ItemsActive
+	BoxesActive
 	EquipmentActive
 	EventsActive
 	StoresActive

@@ -194,6 +194,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", mainhandler)
 	r.HandleFunc("/equipment", equipmentHandler)
+	r.HandleFunc("/box", boxHandler)
 	r.HandleFunc("/event", eventHandler)
 	r.HandleFunc("/store", storeHandler)
 	r.HandleFunc("/item", itemHandler)
