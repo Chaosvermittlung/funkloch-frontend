@@ -159,3 +159,10 @@ type BoxAddPage struct {
 	Default DefaultPage
 	Stores  []Store
 }
+
+type BoxNewPage struct {
+	Default     DefaultPage
+	ID          string
+	Store       string
+	Description string
+}
