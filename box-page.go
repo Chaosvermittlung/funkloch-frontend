@@ -19,6 +19,20 @@ func showBoxlist(w http.ResponseWriter, token string) {
 	showtemplate(w, tp, blp)
 }
 
+func showBoxAddForm(w http.ResponseWriter, token string) {
+	var bap BoxAddPage
+	tp := "templates/box/add.html"
+	bap.Default.Sidebar = BuildSidebar(BoxesActive)
+	bap.Default.Pagename = "Add Box"
+	err := sendauthorizedHTTPRequest("GET", "store/list", token, nil, &bap.Stores)
+	if err != nil {
+		bap.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, bap)
+		return
+	}
+	showtemplate(w, tp, bap)
+}
+
 func boxHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -30,7 +44,7 @@ func boxHandler(w http.ResponseWriter, r *http.Request) {
 	a := r.FormValue("action")
 	switch a {
 	case "add":
-		showItemAddForm(w, token)
+		showBoxAddForm(w, token)
 	case "save":
 		saveNewItem(w, r, token)
 	case "edit":

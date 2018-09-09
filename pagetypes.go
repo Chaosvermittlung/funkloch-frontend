@@ -154,3 +154,8 @@ type BoxListPage struct {
 	Default DefaultPage
 	Boxes   []boxResponse
 }
+
+type BoxAddPage struct {
+	Default DefaultPage
+	Stores  []Store
+}
