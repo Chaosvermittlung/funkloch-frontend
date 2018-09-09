@@ -5,12 +5,12 @@ import (
 )
 
 func showBoxlist(w http.ResponseWriter, token string) {
-	var blp ItemListPage
+	var blp BoxListPage
 	tp := "templates/box/list.html"
 	blp.Default.Sidebar = BuildSidebar(BoxesActive)
 	blp.Default.Pagename = "Item List"
 
-	err := sendauthorizedHTTPRequest("GET", "box/list", token, nil, &blp.Items)
+	err := sendauthorizedHTTPRequest("GET", "box/list", token, nil, &blp.Boxes)
 	if err != nil {
 		blp.Default.Message = BuildMessage(errormessage, "Error creating item/list request: "+err.Error())
 		showtemplate(w, tp, blp)
