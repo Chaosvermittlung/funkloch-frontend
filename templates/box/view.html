@@ -85,30 +85,15 @@
               <div class="form-group">
                   <button id="singlebutton" type="submit" name="action" value="edit" class="btn btn-primary">Edit</button>
                   <button id="singlebutton" type="submit" name="action" value="label" class="btn btn-primary">Create Label</button>
-                  <input type="hidden" name="itemid" value="{{.Box.Box.BoxID}}"/>
+                  <button id="singlebutton" type="submit" name="action" value="content-label" class="btn btn-primary">Create Content Label</button>
+                  <input type="hidden" name="boxid" value="{{.Box.Box.BoxID}}"/>
                   <input type="hidden" name="store" value="{{.Box.Store.Name}}"/>
                   <input type="hidden" name="EAN" value="{{.Box.Box.Code}}"/>
               </div>
               </fieldset>
             </form>
             <h4 class="sub-header">Items</h4>
-            <form method="post">
-            <div class="form-group ">
-              <label class="control-label requiredField" for="comment">
-              Comment
-              <span class="asteriskField">
-                *
-              </span>
-              </label>
-              <input class="form-control" id="comment" name="comment" type="text"/>
-            </div>
-            <div class="form-group">
-              <div>
-              <button class="btn btn-primary" name="action" value="add-fault" type="submit">
-                Add Item
-              </button>
-              </div>
-            </div>
+            <form method="get">
             <div class="form-group">
               <label class="control-label" for="item">Item</label>
               <select class="form-control" name="item">
@@ -118,6 +103,12 @@
                   {{end}}
               </select>
             </div>
+            <div class="form-group">
+              <button class="btn btn-primary" name="action" value="add-item" type="submit">
+                Add Item
+              </button>
+            </div>
+            </form>
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
