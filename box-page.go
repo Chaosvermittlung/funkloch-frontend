@@ -96,6 +96,36 @@ func boxLabel(w http.ResponseWriter, r *http.Request, token string) {
 	}
 }
 
+func viewBox(w http.ResponseWriter, r *http.Request, token string) {
+	var bvp BoxViewPage
+	tp := "templates/box/view.html"
+	bvp.Default.Sidebar = BuildSidebar(BoxesActive)
+	bvp.Default.Pagename = "View Box"
+	id := r.FormValue("id")
+	err := sendauthorizedHTTPRequest("GET", "box/"+id, token, nil, &bvp.Box)
+	if err != nil {
+		bvp.Default.Message = BuildMessage(errormessage, "Error getting box request: "+err.Error())
+		showtemplate(w, tp, bvp)
+		return
+	}
+	b := new(bytes.Buffer)
+	encoder := json.NewEncoder(b)
+	encoder.Encode(bvp.Box.Box)
+	err = sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, b, &bvp.Items)
+	if err != nil {
+		bvp.Default.Message = BuildMessage(errormessage, "Error getting items request: "+err.Error())
+		showtemplate(w, tp, bvp)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "item/storeless", token, nil, &bvp.Storeless)
+	if err != nil {
+		bvp.Default.Message = BuildMessage(errormessage, "Error getting storeless items request: "+err.Error())
+		showtemplate(w, tp, bvp)
+		return
+	}
+	showtemplate(w, tp, bvp)
+}
+
 func boxHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -117,7 +147,7 @@ func boxHandler(w http.ResponseWriter, r *http.Request) {
 	case "delete":
 		deleteItem(w, r, token)
 	case "view":
-		viewItem(w, r, token)
+		viewBox(w, r, token)
 	case "label":
 		boxLabel(w, r, token)
 	case "add-fault":

@@ -166,3 +166,10 @@ type BoxNewPage struct {
 	Store       string
 	Description string
 }
+
+type BoxViewPage struct {
+	Default   DefaultPage
+	Box       boxResponse
+	Items     []itemResponse
+	Storeless []itemResponse
+}
