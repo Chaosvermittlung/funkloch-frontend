@@ -12,7 +12,7 @@ func showBoxlist(w http.ResponseWriter, token string) {
 	var blp BoxListPage
 	tp := "templates/box/list.html"
 	blp.Default.Sidebar = BuildSidebar(BoxesActive)
-	blp.Default.Pagename = "Item List"
+	blp.Default.Pagename = "Box List"
 
 	err := sendauthorizedHTTPRequest("GET", "box/list", token, nil, &blp.Boxes)
 	if err != nil {
