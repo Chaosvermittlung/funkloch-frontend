@@ -96,6 +96,22 @@ func boxLabel(w http.ResponseWriter, r *http.Request, token string) {
 	}
 }
 
+func contentLabel(w http.ResponseWriter, r *http.Request, token string) {
+	id := r.FormValue("boxid")
+	var irs []itemResponse
+	err := sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, nil, &irs)
+	if err != nil {
+		fmt.Fprintln(w, "Error getting items request: "+err.Error())
+		fmt.Println("Error getting items request: " + err.Error())
+		return
+	}
+	w.Header().Set("Content-type", "application/pdf")
+	err = createContentlabel(irs, w)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func viewBox(w http.ResponseWriter, r *http.Request, token string) {
 	var bvp BoxViewPage
 	tp := "templates/box/view.html"
@@ -108,10 +124,7 @@ func viewBox(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, bvp)
 		return
 	}
-	b := new(bytes.Buffer)
-	encoder := json.NewEncoder(b)
-	encoder.Encode(bvp.Box.Box)
-	err = sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, b, &bvp.Items)
+	err = sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, nil, &bvp.Items)
 	if err != nil {
 		bvp.Default.Message = BuildMessage(errormessage, "Error getting items request: "+err.Error())
 		showtemplate(w, tp, bvp)
@@ -150,6 +163,8 @@ func boxHandler(w http.ResponseWriter, r *http.Request) {
 		viewBox(w, r, token)
 	case "label":
 		boxLabel(w, r, token)
+	case "content-label":
+		contentLabel(w, r, token)
 	case "add-fault":
 		addFault(w, r, token)
 	default:

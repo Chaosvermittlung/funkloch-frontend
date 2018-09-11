@@ -14,6 +14,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -284,5 +285,41 @@ func createlabel(id string, store string, out io.Writer) error {
 	pdf.Text(pos, y+imageh-15, id)
 
 	err = pdf.Output(out)
+	return err
+}
+
+func formatIndex(index int) string {
+	Result := ""
+	if index < 10 {
+		Result = "0"
+	}
+	Result = Result + strconv.Itoa(index)
+	return Result
+}
+
+func createContentlabel(items []itemResponse, out io.Writer) error {
+	count := float64(len(items))
+	height := count*4 + 12.0
+	pdf := gofpdf.NewCustom(&gofpdf.InitType{
+		UnitStr:        "mm",
+		Size:           gofpdf.SizeType{Wd: 62, Ht: height},
+		OrientationStr: "P",
+	})
+	pdf.SetMargins(1, 1, 1)
+	pdf.SetFont("Helvetica", "", 20)
+	pdf.AddPage()
+	pdf.SetXY(1, 0)
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
+	content := tr("Content:")
+	y := 6.0
+	pdf.Text(1.0, y, content)
+	pdf.SetFont("Helvetica", "", 10)
+	y = 12.0
+	for index, i := range items {
+		line := formatIndex(index+1) + ": " + strconv.Itoa(i.Item.Code) + " - " + i.Equipment.Name
+		pdf.Text(1.0, y, line)
+		y = y + 4
+	}
+	err := pdf.Output(out)
 	return err
 }
