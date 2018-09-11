@@ -82,13 +82,14 @@
             <div class="form-group">
               <label class="control-label" for="box">Box</label>
               <select class="form-control" name="box">
-                  {{range $index, $element := $.Boxes}}
-                    {{if eq $element.Box.BoxID $.Ite.Item.BoxID}}
-                      <option value="{{$element.Box.BoxID}}" selected>Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
-                    {{else}}
-                      <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
-                    {{end}}
+                <option value="0">None</option>
+                {{range $index, $element := $.Boxes}}
+                  {{if eq $element.Box.BoxID $.Ite.Item.BoxID}}
+                    <option value="{{$element.Box.BoxID}}" selected>Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
+                  {{else}}
+                    <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
                   {{end}}
+                {{end}}
               </select>
             </div>
             <!-- Button -->

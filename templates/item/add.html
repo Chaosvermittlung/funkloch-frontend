@@ -75,6 +75,7 @@
               <label class="control-label" for="box">Box</label>
               <select class="form-control" name="box">
                 <option selected disabled>Choose Box</option>
+                <option value="0">None</option>
                 {{range $index, $element := $.Boxes}}
                       <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
                 {{end}}
