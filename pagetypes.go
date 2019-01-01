@@ -173,3 +173,9 @@ type BoxViewPage struct {
 	Items     []itemResponse
 	Storeless []itemResponse
 }
+
+type BoxEditPage struct {
+	Default DefaultPage
+	Box     boxResponse
+	Stores  []Store
+}

@@ -139,6 +139,80 @@ func viewBox(w http.ResponseWriter, r *http.Request, token string) {
 	showtemplate(w, tp, bvp)
 }
 
+func showBoxEditForm(w http.ResponseWriter, r *http.Request, token string) {
+	var bep BoxEditPage
+	tp := "templates/box/edit.html"
+	bep.Default.Sidebar = BuildSidebar(BoxesActive)
+	bep.Default.Pagename = "Edit Box"
+	id := r.FormValue("boxid")
+	err := sendauthorizedHTTPRequest("GET", "box/"+id, token, nil, &bep.Box)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "store/list", token, nil, &bep.Stores)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error sending Stores request: "+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	showtemplate(w, tp, bep)
+}
+
+func patchBox(w http.ResponseWriter, r *http.Request, token string) {
+	var bep BoxEditPage
+	tp := "templates/Box/edit.html"
+	bep.Default.Sidebar = BuildSidebar(BoxesActive)
+	bep.Default.Pagename = "Edit Box"
+	id := r.FormValue("boxid")
+	d := r.FormValue("description")
+	s := r.FormValue("store")
+	ean := r.FormValue("EAN")
+	sid, err := strconv.Atoi(s)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error converting Store ID"+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	eani, err := strconv.Atoi(ean)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error converting EAN"+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	var b Box
+	b.Description = d
+	b.StoreID = sid
+	b.Code = eani
+	by := new(bytes.Buffer)
+	encoder := json.NewEncoder(by)
+	encoder.Encode(b)
+
+	err = sendauthorizedHTTPRequest("PATCH", "box/"+id, token, by, nil)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	http.Redirect(w, r, "/box", http.StatusSeeOther)
+}
+
+func deleteBox(w http.ResponseWriter, r *http.Request, token string) {
+	var bep BoxEditPage
+	tp := "templates/Box/edit.html"
+	bep.Default.Sidebar = BuildSidebar(BoxesActive)
+	bep.Default.Pagename = "Edit Box"
+	id := r.FormValue("boxid")
+	err := sendauthorizedHTTPRequest("DELETE", "box/"+id, token, nil, nil)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
+	http.Redirect(w, r, "/box", http.StatusSeeOther)
+}
+
 func boxHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -154,11 +228,11 @@ func boxHandler(w http.ResponseWriter, r *http.Request) {
 	case "save":
 		saveNewBox(w, r, token)
 	case "edit":
-		showItemEditForm(w, r, token)
+		showBoxEditForm(w, r, token)
 	case "patch":
-		patchItem(w, r, token)
+		patchBox(w, r, token)
 	case "delete":
-		deleteItem(w, r, token)
+		deleteBox(w, r, token)
 	case "view":
 		viewBox(w, r, token)
 	case "label":
