@@ -136,7 +136,18 @@ func showItemEditForm(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func deleteItem(w http.ResponseWriter, r *http.Request, token string) {
-
+	var iep ItemEditPage
+	tp := "templates/item/edit.html"
+	iep.Default.Sidebar = BuildSidebar(ItemsActive)
+	iep.Default.Pagename = "Edit Item"
+	id := r.FormValue("itemid")
+	err := sendauthorizedHTTPRequest("DELETE", "item/"+id, token, nil, nil)
+	if err != nil {
+		iep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, iep)
+		return
+	}
+	http.Redirect(w, r, "/item", http.StatusSeeOther)
 }
 
 func patchItem(w http.ResponseWriter, r *http.Request, token string) {
