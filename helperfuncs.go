@@ -44,22 +44,15 @@ func createNavitem(name string, link string) []template.HTML {
 }
 
 func init() {
-	overview := createNavitem("Overview", "")
-	item := createNavitem("Items", "item")
-	box := createNavitem("Boxes", "box")
-	equipment := createNavitem("Equipment", "equipment")
-	event := createNavitem("Events", "event")
-	store := createNavitem("Stores", "store")
-	fault := createNavitem("Faults", "fault")
-	whishlist := createNavitem("Whishlists", "whishlist")
-	navitems = append(navitems, overview)
-	navitems = append(navitems, item)
-	navitems = append(navitems, box)
-	navitems = append(navitems, equipment)
-	navitems = append(navitems, event)
-	navitems = append(navitems, store)
-	navitems = append(navitems, fault)
-	navitems = append(navitems, whishlist)
+	navitems = append(navitems, createNavitem("Overview", ""))
+	navitems = append(navitems, createNavitem("Items", "item"))
+	navitems = append(navitems, createNavitem("Boxes", "box"))
+	navitems = append(navitems, createNavitem("Equipment", "equipment"))
+	navitems = append(navitems, createNavitem("Events", "event"))
+	navitems = append(navitems, createNavitem("Packinglist", "packinglist"))
+	navitems = append(navitems, createNavitem("Stores", "store"))
+	navitems = append(navitems, createNavitem("Faults", "fault"))
+	navitems = append(navitems, createNavitem("Whishlists", "whishlist"))
 }
 
 const (
@@ -71,6 +64,7 @@ const (
 	StoresActive
 	FaultsActive
 	WishlistsActive
+	PackinglistActive
 )
 
 func BuildSidebar(item int) template.HTML {
