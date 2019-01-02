@@ -179,3 +179,8 @@ type BoxEditPage struct {
 	Box     boxResponse
 	Stores  []Store
 }
+
+type PackinglistListPage struct {
+	Default      DefaultPage
+	Packinglists []Packinglist
+}

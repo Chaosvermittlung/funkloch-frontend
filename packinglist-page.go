@@ -1,8 +1,24 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func showPackinglistList(w http.ResponseWriter, token string) {
+
+	var plp PackinglistListPage
+	tp := "templates/packinglist/list.html"
+	plp.Default.Sidebar = BuildSidebar(PackinglistActive)
+	plp.Default.Pagename = "Packinglist List"
+
+	err := sendauthorizedHTTPRequest("GET", "packinglist/list", token, nil, &plp.Packinglists)
+	if err != nil {
+		plp.Default.Message = BuildMessage(errormessage, "Error sending packinglist/list request: "+err.Error())
+		showtemplate(w, tp, plp)
+		return
+	}
+	showtemplate(w, tp, plp)
+
 }
 
 func showPackinglistAddForm(w http.ResponseWriter, token string) {

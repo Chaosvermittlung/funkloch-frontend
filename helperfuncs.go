@@ -61,10 +61,10 @@ const (
 	BoxesActive
 	EquipmentActive
 	EventsActive
+	PackinglistActive
 	StoresActive
 	FaultsActive
 	WishlistsActive
-	PackinglistActive
 )
 
 func BuildSidebar(item int) template.HTML {
