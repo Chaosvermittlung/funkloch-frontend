@@ -290,9 +290,6 @@ func eventHandler(w http.ResponseWriter, r *http.Request) {
 		addEventParticipant(w, r, token)
 	case "remove-participant":
 		removeEventParticipant(w, r, token)
-	case "add-packinglist":
-
-	case "view-packinglist":
 	default:
 		showEventlist(w, token)
 	}

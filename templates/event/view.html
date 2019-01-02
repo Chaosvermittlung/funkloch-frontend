@@ -93,51 +93,6 @@
               </div>
               </fieldset>
             </form>
-            <h4 class="sub-header">Packinglists</h4>
-            <form method="post">
-            <div class="form-group ">
-              <label class="control-label requiredField" for="listname">
-              Name
-              <span class="asteriskField">
-                *
-              </span>
-              </label>
-              <input class="form-control" id="listname" name="listname" type="text"/>
-            </div>
-            <div class="form-group">
-              <div>
-              <button class="btn btn-primary" name="action" value="add-packinglist" type="submit">
-                Add List
-              </button>
-              </div>
-            </div>
-            <input type="hidden" name="id" value="{{.Eve.EventID}}"/>
-            </form>
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {{range $index, $element := .Lists}}
-                  <tr>
-                    <td>{{$element.Name}}</td>
-                    <td>
-                      <form method="POST">
-                          <button type="submit" name="action" value="view-packinglist" class="btn btn-default btn-xs" aria-label="Right Align">
-                              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                          </button>
-                          <input type="hidden" name="id" value="{{$element.PackinglistID}}"/>
-                          
-                      </form>
-                  </tr>
-                  {{end}}
-                </tbody>
-              </table>
-            </div>
             <h4 class="sub-header">Participiants</h4>
             {{if not .IsPart}}
             <form method="post">
