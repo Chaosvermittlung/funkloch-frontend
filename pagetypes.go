@@ -184,3 +184,8 @@ type PackinglistListPage struct {
 	Default      DefaultPage
 	Packinglists []Packinglist
 }
+
+type PackinglistAddPage struct {
+	Default DefaultPage
+	Events  []Event
+}

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func showPackinglistList(w http.ResponseWriter, token string) {
-
 	var plp PackinglistListPage
 	tp := "templates/packinglist/list.html"
 	plp.Default.Sidebar = BuildSidebar(PackinglistActive)
@@ -18,13 +20,49 @@ func showPackinglistList(w http.ResponseWriter, token string) {
 		return
 	}
 	showtemplate(w, tp, plp)
-
 }
 
 func showPackinglistAddForm(w http.ResponseWriter, token string) {
+	var pap PackinglistAddPage
+	tp := "templates/packinglist/add.html"
+	pap.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pap.Default.Pagename = "Add Packinglist"
+	err := sendauthorizedHTTPRequest("GET", "event/list", token, nil, &pap.Events)
+	if err != nil {
+		pap.Default.Message = BuildMessage(errormessage, "Error sending Event request: "+err.Error())
+		showtemplate(w, tp, pap)
+		return
+	}
+	showtemplate(w, tp, pap)
 }
 
 func saveNewPackinglist(w http.ResponseWriter, r *http.Request, token string) {
+	var plp PackinglistListPage
+	tp := "templates/packinglist/list.html"
+	plp.Default.Sidebar = BuildSidebar(PackinglistActive)
+	plp.Default.Pagename = "Packinglist List"
+	n := r.FormValue("name")
+	es := r.FormValue("event")
+	ei, err := strconv.Atoi(es)
+	if err != nil {
+		plp.Default.Message = BuildMessage(errormessage, "Error converting eventid: "+err.Error())
+		showtemplate(w, tp, plp)
+		return
+	}
+	var p Packinglist
+	p.Name = n
+	p.EventID = ei
+	b := new(bytes.Buffer)
+	encoder := json.NewEncoder(b)
+	encoder.Encode(p)
+
+	err = sendauthorizedHTTPRequest("POST", "packinglist/", token, b, &p)
+	if err != nil {
+		plp.Default.Message = BuildMessage(errormessage, "Error posting packinglist request: "+err.Error())
+		showtemplate(w, tp, plp)
+		return
+	}
+	http.Redirect(w, r, "/packinglist", http.StatusSeeOther)
 }
 
 func showPackinglistEditForm(w http.ResponseWriter, r *http.Request, token string) {
