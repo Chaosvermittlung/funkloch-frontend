@@ -93,7 +93,7 @@
               </fieldset>
             </form>
             <h4 class="sub-header">Items</h4>
-            <form method="get">
+            <form method="post">
             <div class="form-group">
               <label class="control-label" for="item">Item</label>
               <select class="form-control" name="item">
@@ -107,6 +107,7 @@
               <button class="btn btn-primary" name="action" value="add-item" type="submit">
                 Add Item
               </button>
+              <input type="hidden" name="boxid" value="{{.Box.Box.BoxID}}"/>
             </div>
             </form>
             <div class="table-responsive">
@@ -115,6 +116,7 @@
                   <tr>
                     <th>EAN</th>
                     <th>Equipment</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -122,6 +124,17 @@
                   <tr>
                     <td>{{$element.Item.Code}}</td>
                     <td>{{$element.Equipment.Name}}</td>
+                    <td>
+                      <form method="post">
+                        <div class="form-group">
+                          <button id="singlebutton" type="submit" name="action" value="remove-item" class="btn btn-danger btn-xs">
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                          </button>
+                          <input type="hidden" name="item" value="{{$element.Item.ItemID}}"/>
+                          <input type="hidden" name="boxid" value="{{$.Box.Box.BoxID}}"/>
+                        </div>
+                      </form>
+                    </td>
                   </tr>
                   {{end}}
                 </tbody>

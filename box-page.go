@@ -213,6 +213,30 @@ func deleteBox(w http.ResponseWriter, r *http.Request, token string) {
 	http.Redirect(w, r, "/box", http.StatusSeeOther)
 }
 
+func modifiyItemsinBox(w http.ResponseWriter, r *http.Request, token string, method string) {
+	var bvp BoxViewPage
+	tp := "templates/box/view.html"
+	bvp.Default.Sidebar = BuildSidebar(BoxesActive)
+	bvp.Default.Pagename = "View Box"
+	bid := r.FormValue("boxid")
+	iid := r.FormValue("item")
+	err := sendauthorizedHTTPRequest(method, "box/"+bid+"/items/"+iid, token, nil, nil)
+	if err != nil {
+		bvp.Default.Message = BuildMessage(errormessage, "Error seding item add request: "+err.Error())
+		showtemplate(w, tp, bvp)
+		return
+	}
+	http.Redirect(w, r, "/box?action=view&id="+bid, http.StatusSeeOther)
+}
+
+func addItemtoBox(w http.ResponseWriter, r *http.Request, token string) {
+	modifiyItemsinBox(w, r, token, "POST")
+}
+
+func removeItemfromBox(w http.ResponseWriter, r *http.Request, token string) {
+	modifiyItemsinBox(w, r, token, "DELETE")
+}
+
 func boxHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -239,8 +263,10 @@ func boxHandler(w http.ResponseWriter, r *http.Request) {
 		boxLabel(w, r, token)
 	case "content-label":
 		contentLabel(w, r, token)
-	case "add-fault":
-		addFault(w, r, token)
+	case "add-item":
+		addItemtoBox(w, r, token)
+	case "remove-item":
+		removeItemfromBox(w, r, token)
 	default:
 		showBoxlist(w, token)
 	}
