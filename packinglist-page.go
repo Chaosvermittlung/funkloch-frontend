@@ -66,6 +66,24 @@ func saveNewPackinglist(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func showPackinglistEditForm(w http.ResponseWriter, r *http.Request, token string) {
+	var pep PackinglistEditPage
+	tp := "templates/packinglist/edit.html"
+	pep.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pep.Default.Pagename = "Edit Packinglist"
+	id := r.FormValue("packinglistid")
+	err := sendauthorizedHTTPRequest("GET", "packinglist/"+id, token, nil, &pep.Packinglist)
+	if err != nil {
+		pep.Default.Message = BuildMessage(errormessage, "Error sending Box request: "+err.Error())
+		showtemplate(w, tp, pep)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "event/list", token, nil, &pep.Events)
+	if err != nil {
+		pep.Default.Message = BuildMessage(errormessage, "Error sending Stores request: "+err.Error())
+		showtemplate(w, tp, pep)
+		return
+	}
+	showtemplate(w, tp, pep)
 }
 
 func patchPackinglist(w http.ResponseWriter, r *http.Request, token string) {
@@ -75,12 +93,48 @@ func deletePackinglist(w http.ResponseWriter, r *http.Request, token string) {
 }
 
 func viewPackinglist(w http.ResponseWriter, r *http.Request, token string) {
+	var pvp PackinglistViewPage
+	tp := "templates/packinglist/view.html"
+	pvp.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pvp.Default.Pagename = "View Packinglist"
+	id := r.FormValue("id")
+	err := sendauthorizedHTTPRequest("GET", "packinglist/"+id, token, nil, &pvp.Packinglist)
+	if err != nil {
+		pvp.Default.Message = BuildMessage(errormessage, "Error getting box request: "+err.Error())
+		showtemplate(w, tp, pvp)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "packinglist/"+id+"/suitable", token, nil, &pvp.Suitable)
+	if err != nil {
+		pvp.Default.Message = BuildMessage(errormessage, "Error getting storeless items request: "+err.Error())
+		showtemplate(w, tp, pvp)
+		return
+	}
+	showtemplate(w, tp, pvp)
 }
 
-func addPackinglistItem(w http.ResponseWriter, r *http.Request, token string) {
+func modifiyBoxesinPackinglist(w http.ResponseWriter, r *http.Request, token string, method string) {
+	var pvp PackinglistViewPage
+	tp := "templates/packinglist/view.html"
+	pvp.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pvp.Default.Pagename = "View Packinglist"
+	bid := r.FormValue("box")
+	pid := r.FormValue("packinglistid")
+	err := sendauthorizedHTTPRequest(method, "packinglist/"+pid+"/boxes/"+bid, token, nil, nil)
+	if err != nil {
+		pvp.Default.Message = BuildMessage(errormessage, "Error seding item add request: "+err.Error())
+		showtemplate(w, tp, pvp)
+		return
+	}
+	http.Redirect(w, r, "/packinglist?action=view&id="+pid, http.StatusSeeOther)
 }
 
-func removePackinglistItem(w http.ResponseWriter, r *http.Request, token string) {
+func addPackinglistBox(w http.ResponseWriter, r *http.Request, token string) {
+	modifiyBoxesinPackinglist(w, r, token, "POST")
+}
+
+func removePackinglistBox(w http.ResponseWriter, r *http.Request, token string) {
+	modifiyBoxesinPackinglist(w, r, token, "DELETE")
 }
 
 func packinglistHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,10 +159,10 @@ func packinglistHandler(w http.ResponseWriter, r *http.Request) {
 		deletePackinglist(w, r, token)
 	case "view":
 		viewPackinglist(w, r, token)
-	case "add-item":
-		addPackinglistItem(w, r, token)
-	case "remove-item":
-		removePackinglistItem(w, r, token)
+	case "add-box":
+		addPackinglistBox(w, r, token)
+	case "remove-box":
+		removePackinglistBox(w, r, token)
 	default:
 		showPackinglistList(w, token)
 	}
