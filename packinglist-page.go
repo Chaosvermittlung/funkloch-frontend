@@ -87,9 +87,46 @@ func showPackinglistEditForm(w http.ResponseWriter, r *http.Request, token strin
 }
 
 func patchPackinglist(w http.ResponseWriter, r *http.Request, token string) {
+	var pep PackinglistEditPage
+	tp := "templates/packinglist/edit.html"
+	pep.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pep.Default.Pagename = "Edit Packinglist"
+	id := r.FormValue("packinglistid")
+	e := r.FormValue("event")
+	n := r.FormValue("name")
+	eid, err := strconv.Atoi(e)
+	if err != nil {
+		pep.Default.Message = BuildMessage(errormessage, "Error converting Event ID"+err.Error())
+		showtemplate(w, tp, pep)
+		return
+	}
+	p := Packinglist{Name: n, EventID: eid}
+	by := new(bytes.Buffer)
+	encoder := json.NewEncoder(by)
+	encoder.Encode(p)
+	err = sendauthorizedHTTPRequest("PATCH", "packinglist/"+id, token, by, nil)
+	if err != nil {
+		pep.Default.Message = BuildMessage(errormessage, "Error sending Packinglist request: "+err.Error())
+		showtemplate(w, tp, pep)
+		return
+	}
+	http.Redirect(w, r, "/packinglist", http.StatusSeeOther)
+
 }
 
 func deletePackinglist(w http.ResponseWriter, r *http.Request, token string) {
+	var pep PackinglistEditPage
+	tp := "templates/packinglist/edit.html"
+	pep.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pep.Default.Pagename = "Edit Packinglist"
+	id := r.FormValue("packinglistid")
+	err := sendauthorizedHTTPRequest("DELETE", "packinglist/"+id, token, nil, nil)
+	if err != nil {
+		pep.Default.Message = BuildMessage(errormessage, "Error sending Packinglist request: "+err.Error())
+		showtemplate(w, tp, pep)
+		return
+	}
+	http.Redirect(w, r, "/packinglist", http.StatusSeeOther)
 }
 
 func viewPackinglist(w http.ResponseWriter, r *http.Request, token string) {

@@ -71,8 +71,8 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label" for="store">Event</label>
-              <select class="form-control" name="store">
+              <label class="control-label" for="event">Event</label>
+              <select class="form-control" name="event">
                   {{range $index, $element := $.Events}}
                     {{if eq $element.EventID $.Packinglist.EventID}}
                       <option value="{{$element.EventID}}" selected>{{$element.Name}}</option>
@@ -86,7 +86,7 @@
             <div class="form-group">
                 <button id="savebutton" type="submit" name="action" value="patch" class="btn btn-primary">Save</button>
                 <button id="deletebutton" type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
-                <input type="hidden" name="boxid" value="{{.Packinglist.PackinglistID}}"/>
+                <input type="hidden" name="packinglistid" value="{{.Packinglist.PackinglistID}}"/>
             </div>
 
             </fieldset>
