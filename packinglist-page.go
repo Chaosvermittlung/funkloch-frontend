@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -174,6 +175,32 @@ func removePackinglistBox(w http.ResponseWriter, r *http.Request, token string) 
 	modifiyBoxesinPackinglist(w, r, token, "DELETE")
 }
 
+func generatePDF(w http.ResponseWriter, r *http.Request, token string) {
+	var pvp PackinglistViewPage
+	tp := "templates/packinglist/view.html"
+	pvp.Default.Sidebar = BuildSidebar(PackinglistActive)
+	pvp.Default.Pagename = "View Packinglist"
+	id := r.FormValue("packinglistid")
+	err := sendauthorizedHTTPRequest("GET", "packinglist/"+id, token, nil, &pvp.Packinglist)
+	if err != nil {
+		pvp.Default.Message = BuildMessage(errormessage, "Error getting box request: "+err.Error())
+		showtemplate(w, tp, pvp)
+		return
+	}
+	err = sendauthorizedHTTPRequest("GET", "packinglist/"+id+"/boxes", token, nil, &pvp.Packinglist.Boxes)
+	if err != nil {
+		pvp.Default.Message = BuildMessage(errormessage, "Error getting box request: "+err.Error())
+		showtemplate(w, tp, pvp)
+		return
+	}
+	w.Header().Set("Content-type", "application/pdf")
+	err = createPacklistPDF(pvp.Packinglist, w)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Fprintln(w, err)
+	}
+}
+
 func packinglistHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := GetCookie(r, "token")
@@ -200,6 +227,8 @@ func packinglistHandler(w http.ResponseWriter, r *http.Request) {
 		addPackinglistBox(w, r, token)
 	case "remove-box":
 		removePackinglistBox(w, r, token)
+	case "generate-pdf":
+		generatePDF(w, r, token)
 	default:
 		showPackinglistList(w, token)
 	}

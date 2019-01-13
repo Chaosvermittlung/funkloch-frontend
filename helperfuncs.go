@@ -317,3 +317,93 @@ func createContentlabel(items []itemResponse, out io.Writer) error {
 	err := pdf.Output(out)
 	return err
 }
+
+const cellHeight = 7.0
+
+func createPackinglistHeader(pdf *gofpdf.Fpdf, header string, subheader string, event string) {
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
+	pdf.SetFont("Helvetica", "B", 30)
+	pdf.Text(5.0, 15, tr(header))
+	pdf.SetFont("Helvetica", "", 24)
+	pdf.Text(5.0, 25, tr(subheader))
+	pdf.SetFont("Helvetica", "", 16)
+	pdf.Text(5.0, 32, tr(event))
+}
+
+func createCheckBox(pdf *gofpdf.Fpdf, label string, fill bool) {
+	pdf.Rect(pdf.GetX()+1, pdf.GetY()+(cellHeight-5.0), 5.0, 5.0, "D")
+	pdf.CellFormat(5.0+1, cellHeight, "", "", 0, "RB", fill, 0, "")
+	w := pdf.GetStringWidth(label)
+	pdf.CellFormat(w+3, cellHeight, label, "", 0, "LB", fill, 0, "")
+}
+
+func addCounterOffset(pdf *gofpdf.Fpdf, fill bool) {
+	pdf.CellFormat(4.0, cellHeight, "", "", 0, "RB", fill, 0, "")
+	pdf.CellFormat(10.0, cellHeight, "", "", 0, "RB", fill, 0, "")
+}
+
+func addCommentLine(pdf *gofpdf.Fpdf, fill bool) {
+	addCounterOffset(pdf, fill)
+	pdf.CellFormat(pdf.GetStringWidth("Comment:"), cellHeight, "Comment:", "", 0, "LB", fill, 0, "")
+	pdf.Line(pdf.GetX(), pdf.GetY()+cellHeight, pdf.GetX()+100, pdf.GetY()+cellHeight)
+}
+
+func addCheckboxes(pdf *gofpdf.Fpdf, check []string, fill bool) {
+	addCounterOffset(pdf, fill)
+	for _, c := range check {
+		createCheckBox(pdf, c, fill)
+	}
+}
+
+func createListEntry(pdf *gofpdf.Fpdf, counter, code, description string, check []string, fill bool) {
+	pdf.CellFormat(4.0, cellHeight, counter, "", 0, "RB", fill, 0, "")
+	pdf.CellFormat(10.0, cellHeight, "", "", 0, "RB", fill, 0, "")
+	pdf.CellFormat(50.0, cellHeight, code, "", 0, "LB", fill, 0, "")
+	pdf.CellFormat(0, cellHeight, description, "", 1, "LB", fill, 0, "")
+	addCheckboxes(pdf, check, fill)
+	pdf.Ln(-1)
+	addCommentLine(pdf, fill)
+	pdf.Ln(-1)
+	pdf.Ln(-1)
+}
+
+func createPackinglistCheckStrings() []string {
+	var result []string
+	result = append(result, "Loaded from Store")
+	result = append(result, "Unloaded at Event")
+	result = append(result, "Loaded at Event")
+	result = append(result, "Unloaded at Event")
+	return result
+}
+
+func createBoxCheckStrings() []string {
+	var result []string
+	result = append(result, "Unloaded from Box")
+	result = append(result, "Put back into Box")
+	return result
+}
+
+func createPacklistPDF(p Packinglist, out io.Writer) error {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	createPackinglistHeader(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+	//pdf.SetXY(5.0, 40.0)
+	pdf.SetY(40)
+	pdf.SetFont("Helvetica", "", 13)
+	c := createPackinglistCheckStrings()
+	for i, b := range p.Boxes {
+		createListEntry(pdf, strconv.Itoa(i+1), strconv.Itoa(b.Code), b.Description, c, false)
+	}
+	c = createBoxCheckStrings()
+	for _, b := range p.Boxes {
+		pdf.AddPage()
+		createPackinglistHeader(pdf, "Packinglist: "+p.Name, "Items of Box: "+strconv.Itoa(b.Code), p.Event.Name)
+		pdf.SetY(40)
+		pdf.SetFont("Helvetica", "", 13)
+		for ii, i := range b.Items {
+			createListEntry(pdf, strconv.Itoa(ii+1), strconv.Itoa(i.Code), i.Equipment.Name, c, false)
+		}
+	}
+	err := pdf.Output(out)
+	return err
+}
