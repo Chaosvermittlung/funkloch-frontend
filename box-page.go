@@ -109,6 +109,7 @@ func contentLabel(w http.ResponseWriter, r *http.Request, token string) {
 	err = createContentlabel(irs, w)
 	if err != nil {
 		fmt.Println(err)
+		fmt.Fprintln(w, err)
 	}
 }
 
