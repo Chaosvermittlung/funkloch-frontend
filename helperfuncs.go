@@ -328,6 +328,11 @@ func createPackinglistHeader(pdf *gofpdf.Fpdf, header string, subheader string, 
 	pdf.Text(5.0, 25, tr(subheader))
 	pdf.SetFont("Helvetica", "", 16)
 	pdf.Text(5.0, 32, tr(event))
+	oldwidth := pdf.GetLineWidth()
+	pdf.SetLineWidth(1)
+	w, _ := pdf.GetPageSize()
+	pdf.Line(5.0, 35, w-5, 35)
+	pdf.SetLineWidth(oldwidth)
 }
 
 func createCheckBox(pdf *gofpdf.Fpdf, label string, fill bool) {
@@ -372,7 +377,7 @@ func createPackinglistCheckStrings() []string {
 	result = append(result, "Loaded from Store")
 	result = append(result, "Unloaded at Event")
 	result = append(result, "Loaded at Event")
-	result = append(result, "Unloaded at Event")
+	result = append(result, "Unloaded at Store")
 	return result
 }
 
@@ -383,24 +388,31 @@ func createBoxCheckStrings() []string {
 	return result
 }
 
-func createPacklistPDF(p Packinglist, out io.Writer) error {
-	pdf := gofpdf.New("P", "mm", "A4", "")
+func addnewPage(pdf *gofpdf.Fpdf, header string, subheader string, event string) {
 	pdf.AddPage()
-	createPackinglistHeader(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
-	//pdf.SetXY(5.0, 40.0)
+	createPackinglistHeader(pdf, header, subheader, event)
 	pdf.SetY(40)
 	pdf.SetFont("Helvetica", "", 13)
+}
+
+func createPacklistPDF(p Packinglist, out io.Writer) error {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
 	c := createPackinglistCheckStrings()
+	_, pageheight := pdf.GetPageSize()
 	for i, b := range p.Boxes {
+		if pdf.GetY()+5*cellHeight > pageheight {
+			addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+		}
 		createListEntry(pdf, strconv.Itoa(i+1), strconv.Itoa(b.Code), b.Description, c, false)
 	}
 	c = createBoxCheckStrings()
 	for _, b := range p.Boxes {
-		pdf.AddPage()
-		createPackinglistHeader(pdf, "Packinglist: "+p.Name, "Items of Box: "+strconv.Itoa(b.Code), p.Event.Name)
-		pdf.SetY(40)
-		pdf.SetFont("Helvetica", "", 13)
+		addnewPage(pdf, "Packinglist: "+p.Name, "Items of Box: "+strconv.Itoa(b.Code), p.Event.Name)
 		for ii, i := range b.Items {
+			if pdf.GetY()+5*cellHeight > pageheight {
+				addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+			}
 			createListEntry(pdf, strconv.Itoa(ii+1), strconv.Itoa(i.Code), i.Equipment.Name, c, false)
 		}
 	}
