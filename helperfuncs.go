@@ -127,7 +127,7 @@ func sendauthorizedHTTPRequest(method string, endpoint string, token string, in 
 		return errors.New("Error creating request: " + err.Error())
 	}
 
-	req.Header.Set("Authorization", "token "+token)
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
