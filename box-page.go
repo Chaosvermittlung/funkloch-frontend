@@ -90,6 +90,7 @@ func boxLabel(w http.ResponseWriter, r *http.Request, token string) {
 	s := r.FormValue("store")
 	e := r.FormValue("EAN")
 	w.Header().Set("Content-type", "application/pdf")
+	w.Header().Set("Content-Disposition", "attachment; filename=box-"+e+".pdf")
 	err := createlabel(e, s, w, false, 0)
 	if err != nil {
 		fmt.Println(err)
@@ -114,6 +115,7 @@ func contentLabel(w http.ResponseWriter, r *http.Request, token string) {
 	}
 	codes := strconv.Itoa(b.Box.Code)
 	w.Header().Set("Content-type", "application/pdf")
+	w.Header().Set("Content-Disposition", "attachment; filename=content-"+codes+".pdf")
 	err = createContentlabel(codes, irs, w)
 	if err != nil {
 		fmt.Println(err)
