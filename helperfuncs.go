@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/boombuler/barcode"
-	"github.com/boombuler/barcode/ean"
+	"github.com/boombuler/barcode/code39"
 	"github.com/gorilla/securecookie"
 	"github.com/jung-kurt/gofpdf"
 )
@@ -224,7 +224,18 @@ func Round(val float64, roundOn float64, places int) (newVal float64) {
 	return
 }
 
-func createlabel(id string, store string, out io.Writer) error {
+func createlabel(id string, store string, out io.Writer, printstore bool, size int) error {
+	switch size {
+	case 0:
+		return createBigLabel(id, store, out, printstore)
+	case 1:
+		return createSmallLabel(id, store, out, printstore)
+	default:
+		return errors.New("Size not specified")
+	}
+}
+
+func createBigLabel(id string, store string, out io.Writer, printstore bool) error {
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr:        "mm",
 		Size:           gofpdf.SizeType{Wd: 62, Ht: 42},
@@ -236,24 +247,15 @@ func createlabel(id string, store string, out io.Writer) error {
 	pdf.SetXY(1, 0)
 	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	store = tr(store)
-	fs := 1.0
+	pdf.SetFontSize(20)
 	w := pdf.GetStringWidth(store)
-	for (w < 60) && (fs < 45) {
-		fs = fs + 1
-		pdf.SetFontSize(fs)
-		w = pdf.GetStringWidth(store)
-	}
-	fs = fs - 1
-	if fs < 1 {
-		fs = 1
-	}
-	pdf.SetFontSize(fs)
 	pos := (64 - w) / 2
-	h := fs / 72 * 25.4
-	y := (16 - h) + 3
-	pdf.Text(pos, y, store)
+	y := float64(10)
+	if printstore {
+		pdf.Text(pos, y, store)
+	}
 
-	bcode, err := ean.Encode(id)
+	bcode, err := code39.Encode(id, false, false)
 
 	if err != nil {
 		return err
@@ -270,13 +272,61 @@ func createlabel(id string, store string, out io.Writer) error {
 	r := bytes.NewReader(by)
 	pdf.RegisterImageReader("code", "JPEG", r)
 	imageh := 42.0
-	pdf.Image("code", 11, y+3, imageh, 20, false, "", 0, "")
+	pdf.Image("code", 11, y+1, imageh, 20, false, "", 0, "")
 
 	pdf.SetFontSize(14)
 	w = pdf.GetStringWidth(id)
 	pos = (64 - w) / 2
 	//fh := 14 / 72 * 25.4
 	pdf.Text(pos, y+imageh-15, id)
+
+	err = pdf.Output(out)
+	return err
+}
+
+func createSmallLabel(id string, store string, out io.Writer, printstore bool) error {
+	pdf := gofpdf.NewCustom(&gofpdf.InitType{
+		UnitStr:        "mm",
+		Size:           gofpdf.SizeType{Wd: 45, Ht: 29},
+		OrientationStr: "P",
+	})
+	pdf.SetFont("Helvetica", "", 10)
+	pdf.AddPage()
+	pdf.SetXY(1, 0)
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
+	store = tr(store)
+	pdf.SetFontSize(15)
+	w := pdf.GetStringWidth(store)
+	pos := (45 - w) / 2
+	y := float64(6)
+	if printstore {
+		pdf.Text(pos, y, store)
+	}
+
+	bcode, err := code39.Encode(id, false, false)
+
+	if err != nil {
+		return err
+	}
+
+	bc, err := barcode.Scale(bcode, 280, 150)
+
+	if err != nil {
+		return err
+	}
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, bc, nil)
+	by := buf.Bytes()
+	r := bytes.NewReader(by)
+	pdf.RegisterImageReader("code", "JPEG", r)
+	imageh := 28.0
+	pdf.Image("code", 8, y+3, imageh, 15, false, "", 0, "")
+
+	pdf.SetFontSize(10)
+	w = pdf.GetStringWidth(id)
+	pos = (45 - w) / 2
+	//fh := 14 / 72 * 25.4
+	pdf.Text(pos, y+imageh-7, id)
 
 	err = pdf.Output(out)
 	return err
@@ -291,28 +341,22 @@ func formatIndex(index int) string {
 	return Result
 }
 
-func createContentlabel(items []itemResponse, out io.Writer) error {
-	count := float64(len(items))
-	height := count*4 + 12.0
-	pdf := gofpdf.NewCustom(&gofpdf.InitType{
-		UnitStr:        "mm",
-		Size:           gofpdf.SizeType{Wd: 62, Ht: height},
-		OrientationStr: "P",
-	})
-	pdf.SetMargins(1, 1, 1)
-	pdf.SetFont("Helvetica", "", 20)
+func createContentlabel(code string, items []itemResponse, out io.Writer) error {
+	pdf := gofpdf.New("L", "mm", "A6", "")
+	//pdf.SetMargins(20, 20, 20)
+	pdf.SetFont("Helvetica", "", 25)
 	pdf.AddPage()
-	pdf.SetXY(1, 0)
+	pdf.SetXY(6, 6)
 	tr := pdf.UnicodeTranslatorFromDescriptor("")
-	content := tr("Content:")
-	y := 6.0
-	pdf.Text(1.0, y, content)
-	pdf.SetFont("Helvetica", "", 10)
-	y = 12.0
+	content := tr(code + " - Content:")
+	y := 14.0
+	pdf.Text(6.0, y, content)
+	pdf.SetFont("Helvetica", "", 15)
+	y = 20.0
 	for index, i := range items {
 		line := formatIndex(index+1) + ": " + strconv.Itoa(i.Item.Code) + " - " + i.Equipment.Name
-		pdf.Text(1.0, y, line)
-		y = y + 4
+		pdf.Text(6.0, y, line)
+		y = y + 6
 	}
 	err := pdf.Output(out)
 	return err

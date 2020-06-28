@@ -90,7 +90,7 @@ func boxLabel(w http.ResponseWriter, r *http.Request, token string) {
 	s := r.FormValue("store")
 	e := r.FormValue("EAN")
 	w.Header().Set("Content-type", "application/pdf")
-	err := createlabel(e, s, w)
+	err := createlabel(e, s, w, false, 0)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -98,15 +98,23 @@ func boxLabel(w http.ResponseWriter, r *http.Request, token string) {
 
 func contentLabel(w http.ResponseWriter, r *http.Request, token string) {
 	id := r.FormValue("boxid")
+	var b boxResponse
+	err := sendauthorizedHTTPRequest("GET", "box/"+id, token, nil, &b)
+	if err != nil {
+		fmt.Fprintln(w, "Error getting box request: "+err.Error())
+		fmt.Println("Error getting box request: " + err.Error())
+		return
+	}
 	var irs []itemResponse
-	err := sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, nil, &irs)
+	err = sendauthorizedHTTPRequest("GET", "box/"+id+"/items", token, nil, &irs)
 	if err != nil {
 		fmt.Fprintln(w, "Error getting items request: "+err.Error())
 		fmt.Println("Error getting items request: " + err.Error())
 		return
 	}
+	codes := strconv.Itoa(b.Box.Code)
 	w.Header().Set("Content-type", "application/pdf")
-	err = createContentlabel(irs, w)
+	err = createContentlabel(codes, irs, w)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Fprintln(w, err)

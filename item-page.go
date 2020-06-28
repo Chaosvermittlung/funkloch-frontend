@@ -212,7 +212,7 @@ func itemLabel(w http.ResponseWriter, r *http.Request, token string) {
 	b := r.FormValue("box")
 	e := r.FormValue("EAN")
 	w.Header().Set("Content-type", "application/pdf")
-	err := createlabel(e, b, w)
+	err := createlabel(e, b, w, true, 1)
 	if err != nil {
 		fmt.Println(err)
 	}
