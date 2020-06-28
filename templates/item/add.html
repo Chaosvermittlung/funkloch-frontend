@@ -77,7 +77,7 @@
                 <option selected disabled>Choose Box</option>
                 <option value="0">None</option>
                 {{range $index, $element := $.Boxes}}
-                      <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} | Store: {{$element.Store.Name}}</option>
+                      <option value="{{$element.Box.BoxID}}">Code: {{$element.Box.Code}} - {{$element.Box.Description}} | Store: {{$element.Store.Name}}</option>
                 {{end}}
               </select>
             </div>
