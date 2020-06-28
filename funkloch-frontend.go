@@ -202,6 +202,7 @@ func main() {
 	r.HandleFunc("/packinglist", packinglistHandler)
 	r.HandleFunc("/login", loginhandler)
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+	log.Println("funkloch Frontend running")
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(conf.Port), r))
 
 }
