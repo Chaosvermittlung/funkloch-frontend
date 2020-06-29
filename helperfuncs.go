@@ -355,7 +355,7 @@ func createContentlabel(code string, items []itemResponse, out io.Writer) error 
 	y = 20.0
 	for index, i := range items {
 		line := formatIndex(index+1) + ": " + strconv.Itoa(i.Item.Code) + " - " + i.Equipment.Name
-		pdf.Text(6.0, y, line)
+		pdf.Text(6.0, y, tr(line))
 		y = y + 6
 	}
 	err := pdf.Output(out)
