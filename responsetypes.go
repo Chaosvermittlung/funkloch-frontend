@@ -58,6 +58,7 @@ type Box struct {
 	Items       []Item `gorm:"foreignkey:BoxID;association_foreignkey:BoxID"`
 	Code        int    `gorm:"type:integer(13)"`
 	Description string `gorm:"not null"`
+	Weight      int    `gorm:"not null;default:0"`
 }
 
 type Item struct {
@@ -117,9 +118,10 @@ type Equipment struct {
 type Packinglist struct {
 	PackinglistID int    `gorm:"primary_key;AUTO_INCREMENT;not null"`
 	Name          string `gorm:"not null"`
-	EventID       int    `gorm:"not null"`
+	EventID       int    `gorm:"foreignkey:EventID;not null"`
 	Event         Event  `gorm:"not null"`
 	Boxes         []Box  `gorm:"many2many:packinglist_boxes;"`
+	Weight        int    `gorm:"not null;default:0"`
 }
 
 type Participant struct {

@@ -194,6 +194,8 @@ func generatePDF(w http.ResponseWriter, r *http.Request, token string) {
 		return
 	}
 	w.Header().Set("Content-type", "application/pdf")
+	w.Header().Set("Content-Disposition",
+		"attachment; filename=packinglist-"+pvp.Packinglist.Name+"-"+pvp.Packinglist.Event.Name+".pdf")
 	err = createPacklistPDF(pvp.Packinglist, w)
 	if err != nil {
 		fmt.Println(err)

@@ -364,13 +364,13 @@ func createContentlabel(code string, items []itemResponse, out io.Writer) error 
 
 const cellHeight = 7.0
 
-func createPackinglistHeader(pdf *gofpdf.Fpdf, header string, subheader string, event string) {
+func createPackinglistHeader(pdf *gofpdf.Fpdf, header string, subheader string, event string, weight string) {
 	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	pdf.SetFont("Helvetica", "B", 30)
 	pdf.Text(5.0, 15, tr(header))
 	pdf.SetFont("Helvetica", "", 24)
-	pdf.Text(5.0, 25, tr(subheader))
-	pdf.SetFont("Helvetica", "", 16)
+	pdf.Text(5.0, 25, tr(subheader+", Weight: "+weight+"kg"))
+	pdf.SetFont("Helvetica", "", 10)
 	pdf.Text(5.0, 32, tr(event))
 	oldwidth := pdf.GetLineWidth()
 	pdf.SetLineWidth(1)
@@ -432,32 +432,33 @@ func createBoxCheckStrings() []string {
 	return result
 }
 
-func addnewPage(pdf *gofpdf.Fpdf, header string, subheader string, event string) {
+func addnewPage(pdf *gofpdf.Fpdf, header string, subheader string, event string, weight string) {
 	pdf.AddPage()
-	createPackinglistHeader(pdf, header, subheader, event)
+	createPackinglistHeader(pdf, header, subheader, event, weight)
 	pdf.SetY(40)
 	pdf.SetFont("Helvetica", "", 13)
 }
 
 func createPacklistPDF(p Packinglist, out io.Writer) error {
 	pdf := gofpdf.New("P", "mm", "A4", "")
-	addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+	addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name, strconv.Itoa(p.Weight))
 	c := createPackinglistCheckStrings()
+	tr := pdf.UnicodeTranslatorFromDescriptor("")
 	_, pageheight := pdf.GetPageSize()
 	for i, b := range p.Boxes {
 		if pdf.GetY()+5*cellHeight > pageheight {
-			addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+			addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name, strconv.Itoa(p.Weight))
 		}
-		createListEntry(pdf, strconv.Itoa(i+1), strconv.Itoa(b.Code), b.Description, c, false)
+		createListEntry(pdf, strconv.Itoa(i+1), strconv.Itoa(b.Code), tr(b.Description), c, false)
 	}
 	c = createBoxCheckStrings()
 	for _, b := range p.Boxes {
-		addnewPage(pdf, "Packinglist: "+p.Name, "Items of Box: "+strconv.Itoa(b.Code), p.Event.Name)
+		addnewPage(pdf, "Packinglist: "+p.Name, "Items of Box: "+strconv.Itoa(b.Code), p.Event.Name, strconv.Itoa(b.Weight))
 		for ii, i := range b.Items {
 			if pdf.GetY()+5*cellHeight > pageheight {
-				addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name)
+				addnewPage(pdf, "Packinglist: "+p.Name, "Boxeslist", p.Event.Name, strconv.Itoa(b.Weight))
 			}
-			createListEntry(pdf, strconv.Itoa(ii+1), strconv.Itoa(i.Code), i.Equipment.Name, c, false)
+			createListEntry(pdf, strconv.Itoa(ii+1), strconv.Itoa(i.Code), tr(i.Equipment.Name), c, false)
 		}
 	}
 	err := pdf.Output(out)

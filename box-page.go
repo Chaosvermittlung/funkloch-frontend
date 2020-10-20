@@ -46,6 +46,8 @@ func saveNewBox(w http.ResponseWriter, r *http.Request, token string) {
 	bap.Default.Pagename = "Add Box"
 	d := r.FormValue("description")
 	s := r.FormValue("store")
+	we := r.FormValue("weight")
+
 	sid, err := strconv.Atoi(s)
 	if err != nil {
 		bap.Default.Message = BuildMessage(errormessage, "Error converting Store ID"+err.Error())
@@ -53,9 +55,17 @@ func saveNewBox(w http.ResponseWriter, r *http.Request, token string) {
 		return
 	}
 
+	wei, err := strconv.Atoi(we)
+	if err != nil {
+		bap.Default.Message = BuildMessage(errormessage, "Error converting Weight"+err.Error())
+		showtemplate(w, tp, bap)
+		return
+	}
+
 	var bo Box
 	bo.Description = d
 	bo.StoreID = sid
+	bo.Weight = wei
 
 	b := new(bytes.Buffer)
 	encoder := json.NewEncoder(b)
@@ -180,6 +190,7 @@ func patchBox(w http.ResponseWriter, r *http.Request, token string) {
 	d := r.FormValue("description")
 	s := r.FormValue("store")
 	ean := r.FormValue("EAN")
+	weight := r.FormValue("weight")
 	sid, err := strconv.Atoi(s)
 	if err != nil {
 		bep.Default.Message = BuildMessage(errormessage, "Error converting Store ID"+err.Error())
@@ -192,10 +203,17 @@ func patchBox(w http.ResponseWriter, r *http.Request, token string) {
 		showtemplate(w, tp, bep)
 		return
 	}
+	we, err := strconv.Atoi(weight)
+	if err != nil {
+		bep.Default.Message = BuildMessage(errormessage, "Error converting Weight"+err.Error())
+		showtemplate(w, tp, bep)
+		return
+	}
 	var b Box
 	b.Description = d
 	b.StoreID = sid
 	b.Code = eani
+	b.Weight = we
 	by := new(bytes.Buffer)
 	encoder := json.NewEncoder(by)
 	encoder.Encode(b)
